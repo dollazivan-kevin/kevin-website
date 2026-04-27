@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Kevin — 设计师 · AI 探索者</title>
   <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;1,9..40,300&family=Bebas+Neue&display=swap" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/ogl/dist/ogl.umd.js"></script>
   <style>
     /* ─── TOKENS ─── */
     :root {
@@ -1383,18 +1382,24 @@
 }());
 
 /* ═══════════════════════════════════════════════════════
-   S1 HERO CANVAS — DarkVeil (WebGL CPPN shader via OGL)
+   S1 HERO CANVAS — DarkVeil (raw WebGL CPPN shader)
 ═══════════════════════════════════════════════════════ */
 (function () {
+  try {
   const cvs = document.getElementById('s1cvs');
   if (!cvs) return;
 
-  const { Renderer, Program, Mesh, Triangle, Vec2 } = OGL;
+  const gl = cvs.getContext('webgl') || cvs.getContext('experimental-webgl');
+  if (!gl) return;
+
   const parent = cvs.parentElement;
 
-  const renderer = new Renderer({ dpr: Math.min(window.devicePixelRatio, 2), canvas: cvs });
-  const gl = renderer.gl;
-  const geometry = new Triangle(gl);
+  function mkShader(type, src) {
+    const s = gl.createShader(type);
+    gl.shaderSource(s, src);
+    gl.compileShader(s);
+    return s;
+  }
 
   const vert = `attribute vec2 position;void main(){gl_Position=vec4(position,0.0,1.0);}`;
 
@@ -1465,29 +1470,47 @@ void main(){
 }
 `;
 
-  const program = new Program(gl, {
-    vertex: vert,
-    fragment: frag,
-    uniforms: {
-      uTime:       { value: 0 },
-      uResolution: { value: new Vec2() },
-      uHueShift:   { value: 0 },
-      uNoise:      { value: 0 },
-      uScan:       { value: 0 },
-      uScanFreq:   { value: 0 },
-      uWarp:       { value: 0 },
-    }
-  });
+  // Compile & link program
+  const vs = mkShader(gl.VERTEX_SHADER, vert);
+  const fs = mkShader(gl.FRAGMENT_SHADER, frag);
+  const prog = gl.createProgram();
+  gl.attachShader(prog, vs);
+  gl.attachShader(prog, fs);
+  gl.linkProgram(prog);
+  gl.useProgram(prog);
 
-  const mesh = new Mesh(gl, { geometry, program });
-  const speed = 0.5;
+  // Fullscreen triangle (covers entire clip space with 3 vertices)
+  const vbuf = gl.createBuffer();
+  gl.bindBuffer(gl.ARRAY_BUFFER, vbuf);
+  gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1,-1, 3,-1, -1,3]), gl.STATIC_DRAW);
+  const posLoc = gl.getAttribLocation(prog, 'position');
+  gl.enableVertexAttribArray(posLoc);
+  gl.vertexAttribPointer(posLoc, 2, gl.FLOAT, false, 0, 0);
+
+  // Uniform locations
+  const uTime     = gl.getUniformLocation(prog, 'uTime');
+  const uRes      = gl.getUniformLocation(prog, 'uResolution');
+  const uHue      = gl.getUniformLocation(prog, 'uHueShift');
+  const uNoise    = gl.getUniformLocation(prog, 'uNoise');
+  const uScan     = gl.getUniformLocation(prog, 'uScan');
+  const uScanFreq = gl.getUniformLocation(prog, 'uScanFreq');
+  const uWarp     = gl.getUniformLocation(prog, 'uWarp');
+  gl.uniform1f(uHue, 0);
+  gl.uniform1f(uNoise, 0);
+  gl.uniform1f(uScan, 0);
+  gl.uniform1f(uScanFreq, 0);
+  gl.uniform1f(uWarp, 0);
+
+  const dpr = Math.min(window.devicePixelRatio, 2);
 
   function resize() {
     const w = parent.clientWidth, h = parent.clientHeight;
-    renderer.setSize(w, h);
-    program.uniforms.uResolution.value.set(w, h);
+    cvs.width  = Math.round(w * dpr);
+    cvs.height = Math.round(h * dpr);
     cvs.style.width  = '100%';
     cvs.style.height = '100%';
+    gl.viewport(0, 0, cvs.width, cvs.height);
+    gl.uniform2f(uRes, w, h);
   }
 
   window.addEventListener('resize', resize);
@@ -1495,9 +1518,10 @@ void main(){
   resize();
 
   const t0 = performance.now();
+  const speed = 0.5;
   (function loop() {
-    program.uniforms.uTime.value = ((performance.now() - t0) / 1000) * speed;
-    renderer.render({ scene: mesh });
+    gl.uniform1f(uTime, ((performance.now() - t0) / 1000) * speed);
+    gl.drawArrays(gl.TRIANGLES, 0, 3);
     requestAnimationFrame(loop);
   })();
 
@@ -1517,6 +1541,8 @@ void main(){
     if (hero) hero.style.transform = 'none';
     frameEl.style.transform = 'none';
   });
+
+  } catch(e) { console.warn('DarkVeil WebGL failed:', e); }
 }());
 
 /* ═══════════════════════════════════════════════════════
