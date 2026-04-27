@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>从零搭建个人网站 · Day 1</title>
+  <style>
+    :root {
+      --bg: #0d0d0d;
+      --surface: #161616;
+      --border: #2a2a2a;
+      --text: #e8e8e8;
+      --muted: #888;
+      --accent: #ff6b35;
+      --accent2: #7c3aed;
+      --code-bg: #1a1a1a;
+      --success: #22c55e;
+      --error: #ef4444;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      line-height: 1.7;
+      font-size: 16px;
+    }
+
+    /* ── Header ── */
+    header {
+      border-bottom: 1px solid var(--border);
+      padding: 0 max(2rem, calc(50% - 380px));
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 56px;
+      position: sticky;
+      top: 0;
+      background: rgba(13,13,13,0.85);
+      backdrop-filter: blur(12px);
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 14px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      color: var(--muted);
+      text-transform: uppercase;
+    }
+
+    .logo span { color: var(--accent); }
+
+    /* ── Hero ── */
+    .hero {
+      padding: 80px max(2rem, calc(50% - 380px)) 60px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 500;
+      color: var(--accent);
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      margin-bottom: 20px;
+    }
+
+    .tag::before {
+      content: '';
+      width: 6px;
+      height: 6px;
+      background: var(--accent);
+      border-radius: 50%;
+      display: block;
+    }
+
+    h1 {
+      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-weight: 700;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      margin-bottom: 20px;
+    }
+
+    h1 em {
+      font-style: normal;
+      background: linear-gradient(135deg, var(--accent), var(--accent2));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+
+    .hero-meta {
+      display: flex;
+      gap: 24px;
+      color: var(--muted);
+      font-size: 14px;
+      margin-top: 24px;
+    }
+
+    .hero-meta span { display: flex; align-items: center; gap: 6px; }
+
+    /* ── Main content ── */
+    main {
+      padding: 0 max(2rem, calc(50% - 380px));
+    }
+
+    /* ── Table of contents ── */
+    .toc {
+      margin: 48px 0;
+      padding: 24px 28px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--accent);
+      border-radius: 4px;
+    }
+
+    .toc-title {
+      font-size: 12px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 14px;
+    }
+
+    .toc ol {
+      padding-left: 20px;
+    }
+
+    .toc li {
+      margin: 6px 0;
+    }
+
+    .toc a {
+      color: var(--text);
+      text-decoration: none;
+      font-size: 14px;
+      transition: color 0.2s;
+    }
+
+    .toc a:hover { color: var(--accent); }
+
+    /* ── Sections ── */
+    section {
+      padding: 56px 0;
+      border-bottom: 1px solid var(--border);
+    }
+
+    section:last-child { border-bottom: none; }
+
+    .step-number {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.15em;
+      color: var(--accent);
+      margin-bottom: 8px;
+    }
+
+    h2 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 20px;
+    }
+
+    h3 {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin: 32px 0 12px;
+      color: var(--text);
+    }
+
+    p { margin-bottom: 16px; color: #ccc; }
+
+    /* ── Screenshot placeholder ── */
+    .screenshot {
+      margin: 28px 0;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow: hidden;
+    }
+
+    .screenshot-bar {
+      background: #1e1e1e;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .dot { width: 10px; height: 10px; border-radius: 50%; }
+    .dot-r { background: #ff5f56; }
+    .dot-y { background: #ffbd2e; }
+    .dot-g { background: #27c93f; }
+
+    .url-bar {
+      flex: 1;
+      background: #2a2a2a;
+      border-radius: 4px;
+      padding: 4px 12px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: monospace;
+    }
+
+    .screenshot-body {
+      background: var(--surface);
+      min-height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      gap: 10px;
+      padding: 32px;
+    }
+
+    .screenshot-label {
+      font-size: 13px;
+      color: var(--muted);
+    }
+
+    .screenshot img {
+      width: 100%;
+      display: block;
+    }
+
+    /* ── Code block ── */
+    .code-block {
+      margin: 20px 0;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .code-header {
+      background: #1e1e1e;
+      padding: 8px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--muted);
+      border-bottom: 1px solid var(--border);
+    }
+
+    .code-lang {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    pre {
+      background: var(--code-bg);
+      padding: 20px;
+      overflow-x: auto;
+      font-family: 'SF Mono', 'Fira Code', Consolas, monospace;
+      font-size: 13px;
+      line-height: 1.6;
+      color: #d4d4d4;
+    }
+
+    .token-keyword { color: #569cd6; }
+    .token-string { color: #ce9178; }
+    .token-comment { color: #6a9955; }
+    .token-cmd { color: #9cdcfe; }
+
+    /* ── Status badge ── */
+    .status {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 4px;
+    }
+
+    .status-success {
+      background: rgba(34,197,94,0.12);
+      color: var(--success);
+      border: 1px solid rgba(34,197,94,0.25);
+    }
+
+    .status-error {
+      background: rgba(239,68,68,0.12);
+      color: var(--error);
+      border: 1px solid rgba(239,68,68,0.25);
+    }
+
+    /* ── Tool card ── */
+    .tool-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+      gap: 12px;
+      margin: 24px 0;
+    }
+
+    .tool-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 16px;
+    }
+
+    .tool-card .tool-name {
+      font-weight: 600;
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .tool-card .tool-version {
+      font-size: 12px;
+      color: var(--success);
+    }
+
+    .tool-card .tool-status {
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    /* ── Flow diagram ── */
+    .flow {
+      display: flex;
+      align-items: center;
+      gap: 0;
+      margin: 28px 0;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .flow-node {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      padding: 10px 16px;
+      font-size: 13px;
+      font-weight: 500;
+      white-space: nowrap;
+    }
+
+    .flow-node.highlight {
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .flow-arrow {
+      color: var(--muted);
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+
+    /* ── Callout ── */
+    .callout {
+      margin: 24px 0;
+      padding: 16px 20px;
+      border-radius: 6px;
+      font-size: 14px;
+      display: flex;
+      gap: 12px;
+    }
+
+    .callout-info {
+      background: rgba(124,58,237,0.1);
+      border: 1px solid rgba(124,58,237,0.25);
+      color: #c4b5fd;
+    }
+
+    .callout-warn {
+      background: rgba(234,179,8,0.1);
+      border: 1px solid rgba(234,179,8,0.25);
+      color: #fde68a;
+    }
+
+    .callout-icon { font-size: 16px; flex-shrink: 0; margin-top: 1px; }
+
+    /* ── Summary card ── */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin: 28px 0;
+    }
+
+    @media (max-width: 600px) {
+      .summary-grid { grid-template-columns: 1fr; }
+      .flow { flex-direction: column; align-items: flex-start; }
+    }
+
+    .summary-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 20px;
+    }
+
+    .summary-card .sc-label {
+      font-size: 11px;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin-bottom: 8px;
+    }
+
+    .summary-card .sc-value {
+      font-size: 14px;
+      font-weight: 500;
+      word-break: break-all;
+    }
+
+    .summary-card .sc-value a {
+      color: var(--accent);
+      text-decoration: none;
+    }
+
+    /* ── Footer ── */
+    footer {
+      padding: 40px max(2rem, calc(50% - 380px));
+      border-top: 1px solid var(--border);
+      color: var(--muted);
+      font-size: 13px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <div class="logo">Kevin<span>.</span>dev</div>
+  <div style="font-size:13px;color:var(--muted);">2026-04-24</div>
+</header>
+
+<div class="hero">
+  <div class="tag">建站日志 · Day 1</div>
+  <h1>从零搭建个人网站<br>一个设计师的<em>第一次部署</em></h1>
+  <p style="color:var(--muted);max-width:480px;margin-top:16px;">完全不懂代码，靠 Claude Code 全程陪跑，用 Next.js + GitHub + Cloudflare，花一下午把个人网站从零跑上线。</p>
+  <div class="hero-meta">
+    <span>📅 2026-04-24</span>
+    <span>⏱ 约 2 小时</span>
+    <span>🛠 Next.js + Cloudflare Workers</span>
+  </div>
+</div>
+
+<main>
+
+  <div class="toc">
+    <div class="toc-title">目录</div>
+    <ol>
+      <li><a href="#s1">环境检查：电脑上已经有什么</a></li>
+      <li><a href="#s2">创建 Next.js 项目</a></li>
+      <li><a href="#s3">创建 GitHub 仓库并推送</a></li>
+      <li><a href="#s4">连接 Cloudflare，第一次踩坑</a></li>
+      <li><a href="#s5">修复配置，成功部署上线</a></li>
+      <li><a href="#s6">安装 web-design-engineer 技能</a></li>
+      <li><a href="#s7">最终成果</a></li>
+    </ol>
+  </div>
+
+  <!-- S1 -->
+  <section id="s1">
+    <div class="step-number">Step 01</div>
+    <h2>环境检查：电脑上已经有什么</h2>
+    <p>开始之前先让 Claude 检查了一遍电脑，发现关键工具都已经装好了，省了不少事。</p>
+
+    <div class="tool-grid">
+      <div class="tool-card">
+        <div class="tool-name">Node.js</div>
+        <div class="tool-version">v24.15.0 ✓</div>
+        <div class="tool-status">已安装，版本很新</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">Git</div>
+        <div class="tool-version">v2.50.1 ✓</div>
+        <div class="tool-status">Apple 内置版本</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">npm</div>
+        <div class="tool-version">v11.12.1 ✓</div>
+        <div class="tool-status">随 Node 一起装的</div>
+      </div>
+      <div class="tool-card">
+        <div class="tool-name">VS Code CLI</div>
+        <div class="tool-version" style="color:var(--muted)">未检测到</div>
+        <div class="tool-status">用 Cursor 替代</div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">💡</span>
+      <div>我用的是 Cursor + Claude Code 插件，所有操作直接在里面完成，不需要单独开终端。</div>
+    </div>
+  </section>
+
+  <!-- S2 -->
+  <section id="s2">
+    <div class="step-number">Step 02</div>
+    <h2>创建 Next.js 项目</h2>
+    <p>项目文件夹已经建好了，放在 <code style="background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13px;">/Users/kevin/Coding/Kevin-website</code>。</p>
+
+    <div class="screenshot">
+      <div class="screenshot-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="url-bar">Finder · Coding / Kevin-website</div>
+      </div>
+      <div class="screenshot-body">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5"><path d="M3 7a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v10a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V7z"/><path d="M16 3v4M8 3v4"/></svg>
+        <div class="screenshot-label">Kevin-website 文件夹（空）</div>
+      </div>
+    </div>
+
+    <p>但是 <code style="background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13px;">create-next-app</code> 不允许项目名有大写字母，"Kevin-website" 里有大写 K 直接报错。绕过方法是先创建到临时目录，再复制过来：</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-lang">bash</div>
+        <div class="status status-success">✓ 成功</div>
+      </div>
+      <pre><span class="token-comment"># 先创建到 /tmp 目录（小写名字）</span>
+<span class="token-cmd">npx create-next-app@latest /tmp/kevin-website \
+  --typescript --tailwind --eslint --app --src-dir</span>
+
+<span class="token-comment"># 再复制到目标文件夹</span>
+<span class="token-cmd">cp -r /tmp/kevin-website/. /Users/kevin/Coding/Kevin-website/</span></pre>
+    </div>
+
+    <p>复制过来的 <code style="background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13px;">node_modules</code> 有问题，重新安装了一次依赖，然后启动开发服务器：</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-lang">bash</div>
+        <div class="status status-success">✓ HTTP 200</div>
+      </div>
+      <pre><span class="token-cmd">npm install
+npm run dev</span>
+<span class="token-comment"># 访问 http://localhost:3000 看到默认页面 ✓</span></pre>
+    </div>
+  </section>
+
+  <!-- S3 -->
+  <section id="s3">
+    <div class="step-number">Step 03</div>
+    <h2>创建 GitHub 仓库并推送</h2>
+    <p>在 GitHub 上新建了公开仓库 <strong>kevin-website</strong>，然后遇到了第二个坎：git push 需要登录授权。</p>
+
+    <div class="screenshot">
+      <div class="screenshot-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="url-bar">github.com/dollazivan-kevin/kevin-website</div>
+      </div>
+      <div class="screenshot-body">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5"><circle cx="12" cy="12" r="10"/><path d="M9 9a3 3 0 1 1 5.83 1c-.08.44-.27.84-.54 1.17L12 14"/><circle cx="12" cy="18" r="0.5" fill="#444"/></svg>
+        <div class="screenshot-label">空仓库界面，带有 Quick setup 指引</div>
+      </div>
+    </div>
+
+    <h3>安装 GitHub CLI 完成授权</h3>
+    <p>电脑上没有 Homebrew，先装 Homebrew，再用它装 GitHub CLI：</p>
+
+    <div class="code-block">
+      <div class="code-header"><div class="code-lang">bash</div></div>
+      <pre><span class="token-comment"># 安装 Homebrew</span>
+<span class="token-cmd">/bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"</span>
+
+<span class="token-comment"># 安装 GitHub CLI</span>
+<span class="token-cmd">/opt/homebrew/bin/brew install gh</span>
+
+<span class="token-comment"># 登录（会打开浏览器授权）</span>
+<span class="token-cmd">/opt/homebrew/bin/gh auth login</span></pre>
+    </div>
+
+    <div class="callout callout-warn">
+      <span class="callout-icon">⚠️</span>
+      <div>Homebrew 安装在 <code style="background:rgba(0,0,0,0.3);padding:1px 5px;border-radius:3px;">/opt/homebrew/bin/</code>，需要用完整路径调用，否则找不到命令。</div>
+    </div>
+
+    <p>授权成功后推送代码：</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-lang">bash</div>
+        <div class="status status-success">✓ 推送成功</div>
+      </div>
+      <pre><span class="token-cmd">git remote add origin https://github.com/dollazivan-kevin/kevin-website.git
+git branch -M main
+git push -u origin main</span></pre>
+    </div>
+  </section>
+
+  <!-- S4 -->
+  <section id="s4">
+    <div class="step-number">Step 04</div>
+    <h2>连接 Cloudflare，第一次踩坑</h2>
+    <p>Cloudflare 控制台 → Workers and Pages → Create，连接了 GitHub 仓库，构建命令填 <code style="background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13px;">npm run build</code>，直接点 Deploy。</p>
+
+    <div class="screenshot">
+      <div class="screenshot-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="url-bar">dash.cloudflare.com · Workers and Pages · Create</div>
+      </div>
+      <div class="screenshot-body">
+        <svg width="48" height="48" viewBox="0 0 24 24" fill="none" stroke="#444" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M9 9h6M9 12h6M9 15h4"/></svg>
+        <div class="screenshot-label">Set up application 表单，已填入仓库和构建命令</div>
+      </div>
+    </div>
+
+    <p>部署失败，错误信息指向缺少 <code style="background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13px;">.next/standalone</code> 目录：</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-lang">错误日志</div>
+        <div class="status status-error">✗ 失败</div>
+      </div>
+      <pre><span style="color:var(--error)">Error: ENOENT: no such file or directory
+  path: '/opt/buildhome/repo/.next/standalone/.next/server/pages-manifest.json'</span>
+
+<span class="token-comment"># 原因：Cloudflare 用的是 opennextjs-cloudflare</span>
+<span class="token-comment"># 它需要 output: 'standalone'，不是 output: 'export'</span></pre>
+    </div>
+  </section>
+
+  <!-- S5 -->
+  <section id="s5">
+    <div class="step-number">Step 05</div>
+    <h2>修复配置，成功部署上线</h2>
+    <p>把 <code style="background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13px;">next.config.ts</code> 里的 output 改一个字：</p>
+
+    <div class="code-block">
+      <div class="code-header"><div class="code-lang">next.config.ts</div></div>
+      <pre><span class="token-keyword">const</span> nextConfig: NextConfig = {
+  output: <span class="token-string">'standalone'</span>,  <span class="token-comment">// 从 'export' 改成 'standalone'</span>
+};</pre>
+    </div>
+
+    <p>推送到 GitHub，Cloudflare 自动触发重新部署，这次成功了：</p>
+
+    <div class="screenshot">
+      <div class="screenshot-bar">
+        <div class="dot dot-r"></div>
+        <div class="dot dot-y"></div>
+        <div class="dot dot-g"></div>
+        <div class="url-bar">dash.cloudflare.com · kevin-website · production/builds</div>
+      </div>
+      <div class="screenshot-body">
+        <div style="display:flex;flex-direction:column;gap:10px;width:100%;max-width:480px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#111;border-radius:6px;border:1px solid #2a2a2a;">
+            <span style="color:var(--success);font-size:14px;">✓ Building application</span>
+            <span style="color:var(--muted);font-size:12px;">11s</span>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 16px;background:#111;border-radius:6px;border:1px solid #2a2a2a;">
+            <span style="color:var(--success);font-size:14px;">✓ Deploying to Cloudflare's global network</span>
+            <span style="color:var(--muted);font-size:12px;">1m 50s</span>
+          </div>
+          <div style="text-align:center;padding:8px;color:var(--success);font-size:13px;font-weight:600;">✨ Success! Build completed.</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="callout callout-info">
+      <span class="callout-icon">🚀</span>
+      <div>网站地址：<strong>https://kevin-website.dollazivan.workers.dev</strong><br>以后每次推送代码，Cloudflare 自动重新部署，约 2 分钟生效。</div>
+    </div>
+  </section>
+
+  <!-- S6 -->
+  <section id="s6">
+    <div class="step-number">Step 06</div>
+    <h2>安装 web-design-engineer 技能</h2>
+    <p>从 GitHub 下载了 <a href="https://github.com/ConardLi/web-design-skill" style="color:var(--accent)">ConardLi/web-design-skill</a> 这个技能包，让 Claude 具备高质量视觉页面的生成能力。</p>
+
+    <div class="code-block">
+      <div class="code-header">
+        <div class="code-lang">安装路径</div>
+        <div class="status status-success">✓ 已安装</div>
+      </div>
+      <pre>.claude/skills/web-design-engineer/
+├── SKILL.md                  <span class="token-comment"># 407 行，核心能力定义</span>
+└── references/
+    └── advanced-patterns.md  <span class="token-comment"># 521 行，高级设计模式参考</span></pre>
+    </div>
+
+    <p>调用方式：在 Cursor 里输入 <code style="background:var(--code-bg);padding:2px 6px;border-radius:3px;font-size:13px;">/web-design-engineer</code>（需重启 Cursor 后生效）。</p>
+  </section>
+
+  <!-- S7 -->
+  <section id="s7">
+    <div class="step-number">结果</div>
+    <h2>最终成果</h2>
+
+    <div class="summary-grid">
+      <div class="summary-card">
+        <div class="sc-label">线上地址</div>
+        <div class="sc-value"><a href="https://kevin-website.dollazivan.workers.dev">kevin-website.dollazivan.workers.dev</a></div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">代码仓库</div>
+        <div class="sc-value"><a href="https://github.com/dollazivan-kevin/kevin-website">github.com/dollazivan-kevin/kevin-website</a></div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">技术栈</div>
+        <div class="sc-value">Next.js 16 + Tailwind + TypeScript</div>
+      </div>
+      <div class="summary-card">
+        <div class="sc-label">部署方式</div>
+        <div class="sc-value">Cloudflare Workers（opennextjs）</div>
+      </div>
+    </div>
+
+    <h3>自动化部署流程</h3>
+    <div class="flow">
+      <div class="flow-node">改代码</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">git push</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node highlight">GitHub</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node highlight">Cloudflare 自动部署</div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-node">网站更新</div>
+    </div>
+
+    <h3>踩过的坑</h3>
+    <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px;">
+      <div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:14px;">
+        <span style="color:var(--error);">✗</span> 文件夹名有大写字母 → <span style="color:var(--success);">解决：先创建到 /tmp，再复制</span>
+      </div>
+      <div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:14px;">
+        <span style="color:var(--error);">✗</span> git push 需要授权 → <span style="color:var(--success);">解决：安装 Homebrew + gh CLI</span>
+      </div>
+      <div style="padding:14px 16px;background:var(--surface);border:1px solid var(--border);border-radius:6px;font-size:14px;">
+        <span style="color:var(--error);">✗</span> Cloudflare 构建失败 → <span style="color:var(--success);">解决：output 改为 'standalone'</span>
+      </div>
+    </div>
+  </section>
+
+</main>
+
+<footer>
+  <div>Kevin · 建站日志 Day 1</div>
+  <div>Next.js + Cloudflare Workers</div>
+</footer>
+
+</body>
+</html>
