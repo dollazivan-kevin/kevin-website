@@ -1,0 +1,623 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>DESIGN.md 风格预览</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  :root {
+    --bg: #0a0a0a;
+    --surface: #141414;
+    --border: rgba(255,255,255,.08);
+    --text: #f0f0f0;
+    --muted: #666;
+    --accent: #41BDF4;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
+    min-height: 100vh;
+    padding: 48px 24px 80px;
+  }
+
+  .header {
+    max-width: 900px;
+    margin: 0 auto 48px;
+  }
+
+  .header-eye {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: .12em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin-bottom: 12px;
+  }
+
+  .header h1 {
+    font-size: clamp(28px, 4vw, 42px);
+    font-weight: 700;
+    letter-spacing: -.03em;
+    line-height: 1.1;
+    margin-bottom: 14px;
+  }
+
+  .header p {
+    font-size: 15px;
+    color: var(--muted);
+    line-height: 1.7;
+    max-width: 520px;
+  }
+
+  .header p strong { color: var(--text); font-weight: 500; }
+
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 16px;
+    max-width: 900px;
+    margin: 0 auto;
+  }
+
+  /* ── CARD ── */
+  .card {
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    overflow: hidden;
+    cursor: pointer;
+    transition: transform .2s ease, border-color .2s ease, box-shadow .2s ease;
+    position: relative;
+  }
+
+  .card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 16px 40px rgba(0,0,0,.5);
+  }
+
+  .card.active { border-color: var(--accent); box-shadow: 0 0 0 1px var(--accent), 0 16px 40px rgba(65,189,244,.15); }
+
+  /* ── CARD PREVIEW PANE ── */
+  .preview {
+    height: 180px;
+    padding: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .p-nav {
+    display: flex;
+    gap: 6px;
+    align-items: center;
+  }
+  .p-dot { width: 6px; height: 6px; border-radius: 50%; }
+  .p-logo { font-size: 11px; font-weight: 600; letter-spacing: .04em; margin-left: auto; }
+
+  .p-headline {
+    font-weight: 700;
+    line-height: 1.1;
+    letter-spacing: -.02em;
+  }
+
+  .p-body { font-size: 11px; line-height: 1.5; }
+
+  .p-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    width: fit-content;
+  }
+
+  /* ── CARD META ── */
+  .meta {
+    padding: 14px 16px;
+    background: var(--surface);
+    border-top: 1px solid var(--border);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+  }
+
+  .meta-name { font-size: 13px; font-weight: 600; }
+  .meta-desc { font-size: 11px; color: var(--muted); margin-top: 2px; }
+
+  .meta-tag {
+    font-size: 10px;
+    font-weight: 500;
+    padding: 3px 8px;
+    border-radius: 99px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  /* ── DETAIL PANEL ── */
+  .detail {
+    max-width: 900px;
+    margin: 16px auto 0;
+    border-radius: 12px;
+    border: 1px solid var(--accent);
+    background: var(--surface);
+    padding: 24px 28px;
+    display: none;
+  }
+
+  .detail.visible { display: block; }
+
+  .detail-top {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .detail-name { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .detail-tagline { font-size: 13px; color: var(--muted); line-height: 1.6; max-width: 500px; }
+
+  .use-btn {
+    background: var(--accent);
+    color: #000;
+    font-size: 12px;
+    font-weight: 700;
+    padding: 8px 18px;
+    border-radius: 8px;
+    border: none;
+    cursor: pointer;
+    white-space: nowrap;
+    flex-shrink: 0;
+    transition: opacity .15s;
+  }
+  .use-btn:hover { opacity: .85; }
+
+  .swatches {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 16px;
+  }
+
+  .swatch {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .swatch-dot {
+    width: 20px;
+    height: 20px;
+    border-radius: 5px;
+    border: 1px solid rgba(255,255,255,.1);
+    flex-shrink: 0;
+  }
+
+  .tokens {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 8px;
+  }
+
+  .token {
+    background: rgba(255,255,255,.04);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 12px;
+  }
+
+  .token-label { font-size: 10px; color: var(--muted); margin-bottom: 3px; }
+  .token-val { font-size: 12px; font-weight: 500; font-family: 'SF Mono', monospace; }
+
+  .cmd {
+    background: rgba(0,0,0,.4);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    font-size: 12px;
+    font-family: 'SF Mono', monospace;
+    color: #8ec9f0;
+    margin-top: 16px;
+  }
+
+  .cmd span { color: var(--muted); }
+
+  /* ─────────────────────────────────────────────
+     BRAND THEMES (preview pane styling)
+  ───────────────────────────────────────────── */
+
+  /* LINEAR */
+  .theme-linear .preview { background: #08090a; }
+  .theme-linear .p-dot:nth-child(1) { background: #ff5f57; }
+  .theme-linear .p-dot:nth-child(2) { background: #ffbd2e; }
+  .theme-linear .p-dot:nth-child(3) { background: #28c840; }
+  .theme-linear .p-logo { color: #8a8f98; font-family: 'Inter', sans-serif; }
+  .theme-linear .p-headline { font-size: 22px; color: #f7f8f8; font-family: 'Inter', sans-serif; }
+  .theme-linear .p-body { color: #8a8f98; }
+  .theme-linear .p-btn { background: #5e6ad2; color: #fff; }
+  .theme-linear .meta-tag { background: rgba(94,106,210,.15); color: #7170ff; }
+
+  /* FRAMER */
+  .theme-framer .preview { background: #000; }
+  .theme-framer .p-dot:nth-child(1) { background: #333; }
+  .theme-framer .p-dot:nth-child(2) { background: #333; }
+  .theme-framer .p-dot:nth-child(3) { background: #0099ff; }
+  .theme-framer .p-logo { color: #555; font-family: 'Inter', sans-serif; }
+  .theme-framer .p-headline { font-size: 24px; color: #fff; letter-spacing: -.04em; font-family: 'Inter', sans-serif; font-weight: 800; }
+  .theme-framer .p-body { color: #555; }
+  .theme-framer .p-btn { background: #0099ff; color: #fff; border-radius: 99px; }
+  .theme-framer .meta-tag { background: rgba(0,153,255,.12); color: #0099ff; }
+
+  /* STRIPE */
+  .theme-stripe .preview { background: #fff; }
+  .theme-stripe .p-dot:nth-child(1) { background: #ffbd2e; }
+  .theme-stripe .p-dot:nth-child(2) { background: #28c840; }
+  .theme-stripe .p-dot:nth-child(3) { background: #533afd; }
+  .theme-stripe .p-logo { color: #aaa; font-family: 'Inter', sans-serif; }
+  .theme-stripe .p-headline { font-size: 22px; color: #061b31; font-family: 'Inter', sans-serif; }
+  .theme-stripe .p-body { color: #5a6070; }
+  .theme-stripe .p-btn { background: linear-gradient(135deg, #7a73ff, #533afd); color: #fff; }
+  .theme-stripe .meta-tag { background: rgba(83,58,253,.1); color: #533afd; }
+
+  /* VERCEL */
+  .theme-vercel .preview { background: #fff; }
+  .theme-vercel .p-dot:nth-child(1) { background: #eee; }
+  .theme-vercel .p-dot:nth-child(2) { background: #eee; }
+  .theme-vercel .p-dot:nth-child(3) { background: #000; }
+  .theme-vercel .p-logo { color: #999; font-family: 'Inter', sans-serif; }
+  .theme-vercel .p-headline { font-size: 22px; color: #171717; font-family: 'Inter', sans-serif; font-weight: 800; letter-spacing: -.04em; }
+  .theme-vercel .p-body { color: #888; }
+  .theme-vercel .p-btn { background: #171717; color: #fff; border-radius: 4px; }
+  .theme-vercel .meta-tag { background: rgba(0,0,0,.06); color: #555; }
+
+  /* NOTION */
+  .theme-notion .preview { background: #fff; }
+  .theme-notion .p-dot:nth-child(1) { background: #eee; }
+  .theme-notion .p-dot:nth-child(2) { background: #f6f5f4; }
+  .theme-notion .p-dot:nth-child(3) { background: #31302e; }
+  .theme-notion .p-logo { color: #a39e98; font-family: Georgia, serif; font-style: italic; }
+  .theme-notion .p-headline { font-size: 22px; color: rgba(0,0,0,.9); font-family: Georgia, serif; font-weight: 700; letter-spacing: -.01em; }
+  .theme-notion .p-body { color: #615d59; font-family: Georgia, serif; }
+  .theme-notion .p-btn { background: rgba(0,0,0,.9); color: #fff; border-radius: 4px; }
+  .theme-notion .meta-tag { background: #f6f5f4; color: #615d59; }
+
+  /* RAYCAST */
+  .theme-raycast .preview { background: #07080a; }
+  .theme-raycast .p-dot:nth-child(1) { background: #1a1a1c; }
+  .theme-raycast .p-dot:nth-child(2) { background: #222224; }
+  .theme-raycast .p-dot:nth-child(3) { background: #FF6363; }
+  .theme-raycast .p-logo { color: #444; font-family: 'Inter', sans-serif; }
+  .theme-raycast .p-headline { font-size: 22px; color: #f5f5f5; font-family: 'Inter', sans-serif; font-weight: 700; }
+  .theme-raycast .p-body { color: #4a4a50; }
+  .theme-raycast .p-btn { background: rgba(255,255,255,.06); color: #f5f5f5; border: 1px solid rgba(255,255,255,.1); box-shadow: inset 0 1px 0 rgba(255,255,255,.06); }
+  .theme-raycast .meta-tag { background: rgba(255,99,99,.12); color: #FF6363; }
+
+  /* APPLE */
+  .theme-apple .preview { background: #f5f5f7; }
+  .theme-apple .p-dot:nth-child(1) { background: #ddd; }
+  .theme-apple .p-dot:nth-child(2) { background: #ddd; }
+  .theme-apple .p-dot:nth-child(3) { background: #0066cc; }
+  .theme-apple .p-logo { color: #aaa; font-family: -apple-system, sans-serif; }
+  .theme-apple .p-headline { font-size: 22px; color: #1d1d1f; font-family: -apple-system, 'SF Pro Display', sans-serif; font-weight: 600; letter-spacing: -.015em; }
+  .theme-apple .p-body { color: #7a7a7a; font-family: -apple-system, sans-serif; }
+  .theme-apple .p-btn { background: #0066cc; color: #fff; border-radius: 20px; font-size: 12px; }
+  .theme-apple .meta-tag { background: rgba(0,102,204,.1); color: #0066cc; }
+
+  /* ── TOAST ── */
+  .toast {
+    position: fixed;
+    bottom: 28px;
+    left: 50%;
+    transform: translateX(-50%) translateY(80px);
+    background: #1a1a1a;
+    border: 1px solid rgba(255,255,255,.12);
+    color: #f0f0f0;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 10px 20px;
+    border-radius: 99px;
+    box-shadow: 0 8px 24px rgba(0,0,0,.6);
+    transition: transform .25s ease;
+    z-index: 999;
+    white-space: nowrap;
+  }
+
+  .toast.show { transform: translateX(-50%) translateY(0); }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-eye">DESIGN.md Preview</div>
+  <h1>选一个风格<br>让我照着做</h1>
+  <p>点击任意风格卡片查看详情。选好后告诉我 <strong>"用 X 风格帮我做一个页面"</strong>，我会自动读取对应的 DESIGN.md，生成的 UI 风格就跟那个品牌一致。</p>
+</div>
+
+<div class="grid" id="grid"></div>
+<div class="detail" id="detail"></div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const brands = [
+  {
+    id: 'linear',
+    name: 'Linear',
+    tagline: '极简深色 · 工程精密感 · 近黑背景 · 靛紫点缀',
+    mood: '科技 / 工具',
+    theme: 'theme-linear',
+    headline: 'Build · Ship · Repeat',
+    body: 'Track issues with brutal clarity.',
+    btn: 'Get Started',
+    swatches: [
+      { color: '#08090a', label: 'Background' },
+      { color: '#191a1b', label: 'Surface' },
+      { color: '#7170ff', label: 'Accent' },
+      { color: '#f7f8f8', label: 'Text' },
+    ],
+    tokens: [
+      { label: 'Background', val: '#08090a' },
+      { label: 'Accent', val: '#7170ff' },
+      { label: 'Text', val: '#f7f8f8' },
+      { label: 'Font', val: 'Inter 510wt' },
+      { label: 'Radius', val: '6–12px' },
+      { label: 'Mode', val: 'Dark only' },
+    ],
+  },
+  {
+    id: 'framer',
+    name: 'Framer',
+    tagline: '纯黑背景 · 超紧字间距 · 冷蓝点缀 · 动感排版',
+    mood: '创意 / 设计',
+    theme: 'theme-framer',
+    headline: 'Design. Publish. Wow.',
+    body: 'The web builder for creative teams.',
+    btn: 'Start for free',
+    swatches: [
+      { color: '#000000', label: 'Background' },
+      { color: '#111111', label: 'Surface' },
+      { color: '#0099ff', label: 'Accent' },
+      { color: '#ffffff', label: 'Text' },
+    ],
+    tokens: [
+      { label: 'Background', val: '#000000' },
+      { label: 'Accent', val: '#0099ff' },
+      { label: 'Text', val: '#ffffff' },
+      { label: 'Font', val: 'GT Walsheim' },
+      { label: 'Letter-sp', val: '–5.5px@110px' },
+      { label: 'Mode', val: 'Dark only' },
+    ],
+  },
+  {
+    id: 'stripe',
+    name: 'Stripe',
+    tagline: '纯白背景 · 深海军蓝标题 · 饱和紫色强调',
+    mood: '专业 / 金融',
+    theme: 'theme-stripe',
+    headline: 'Payments, simplified.',
+    body: 'Infrastructure for the internet economy.',
+    btn: 'Start now →',
+    swatches: [
+      { color: '#ffffff', label: 'Background' },
+      { color: '#061b31', label: 'Heading' },
+      { color: '#533afd', label: 'Accent' },
+      { color: '#5a6070', label: 'Body' },
+    ],
+    tokens: [
+      { label: 'Background', val: '#ffffff' },
+      { label: 'Heading', val: '#061b31' },
+      { label: 'Accent', val: '#533afd' },
+      { label: 'Font', val: 'Sohne / Inter' },
+      { label: 'Radius', val: '8–12px' },
+      { label: 'Mode', val: 'Light + Dark' },
+    ],
+  },
+  {
+    id: 'vercel',
+    name: 'Vercel',
+    tagline: '极简白底 · 近黑文字 · 零装饰 · 纯工程审美',
+    mood: '开发者 / 极简',
+    theme: 'theme-vercel',
+    headline: 'Build. Preview. Ship.',
+    body: 'Vercel is the platform for frontend developers.',
+    btn: 'Deploy →',
+    swatches: [
+      { color: '#ffffff', label: 'Background' },
+      { color: '#171717', label: 'Text' },
+      { color: '#000000', label: 'CTA' },
+      { color: '#888888', label: 'Muted' },
+    ],
+    tokens: [
+      { label: 'Background', val: '#ffffff' },
+      { label: 'Text', val: '#171717' },
+      { label: 'Accent', val: '#000000' },
+      { label: 'Font', val: 'Geist' },
+      { label: 'Radius', val: '4–8px' },
+      { label: 'Mode', val: 'Light + Dark' },
+    ],
+  },
+  {
+    id: 'notion',
+    name: 'Notion',
+    tagline: '暖白背景 · 带黄棕色调灰阶 · 衬线字体 · 纸质感',
+    mood: '内容 / 温暖',
+    theme: 'theme-notion',
+    headline: 'Write. Plan. Share.',
+    body: 'All your work in one place.',
+    btn: 'Get started',
+    swatches: [
+      { color: '#ffffff', label: 'Background' },
+      { color: '#f6f5f4', label: 'Surface' },
+      { color: '#31302e', label: 'Text' },
+      { color: '#a39e98', label: 'Muted' },
+    ],
+    tokens: [
+      { label: 'Background', val: '#ffffff' },
+      { label: 'Surface', val: '#f6f5f4' },
+      { label: 'Text', val: 'rgba(0,0,0,.9)' },
+      { label: 'Font', val: 'Georgia / Inter' },
+      { label: 'Radius', val: '3–6px' },
+      { label: 'Mode', val: 'Light' },
+    ],
+  },
+  {
+    id: 'raycast',
+    name: 'Raycast',
+    tagline: '深黑蓝底 · macOS质感阴影 · 红色斜条纹点缀',
+    mood: '工具 / macOS',
+    theme: 'theme-raycast',
+    headline: 'Supercharge your Mac.',
+    body: 'A collection of powerful productivity tools.',
+    btn: 'Download',
+    swatches: [
+      { color: '#07080a', label: 'Background' },
+      { color: '#1a1a1c', label: 'Surface' },
+      { color: '#FF6363', label: 'Accent' },
+      { color: '#f5f5f5', label: 'Text' },
+    ],
+    tokens: [
+      { label: 'Background', val: '#07080a' },
+      { label: 'Accent', val: '#FF6363' },
+      { label: 'Text', val: '#f5f5f5' },
+      { label: 'Font', val: 'Inter' },
+      { label: 'Shadow', val: 'macOS inset' },
+      { label: 'Mode', val: 'Dark only' },
+    ],
+  },
+  {
+    id: 'apple',
+    name: 'Apple',
+    tagline: '浅灰底 · 深灰文字 · SF Pro · 极度克制 · 产品即主角',
+    mood: '硬件 / 优雅',
+    theme: 'theme-apple',
+    headline: 'Designed to delight.',
+    body: 'Product speaks. Interface recedes.',
+    btn: 'Learn more',
+    swatches: [
+      { color: '#f5f5f7', label: 'Canvas' },
+      { color: '#1d1d1f', label: 'Text' },
+      { color: '#0066cc', label: 'Accent' },
+      { color: '#7a7a7a', label: 'Muted' },
+    ],
+    tokens: [
+      { label: 'Canvas', val: '#f5f5f7' },
+      { label: 'Text', val: '#1d1d1f' },
+      { label: 'Accent', val: '#0066cc' },
+      { label: 'Font', val: 'SF Pro Display' },
+      { label: 'Radius', val: '12–18px' },
+      { label: 'Mode', val: 'Light + Dark' },
+    ],
+  },
+];
+
+const grid = document.getElementById('grid');
+const detail = document.getElementById('detail');
+const toast = document.getElementById('toast');
+let activeId = null;
+
+function showToast(msg) {
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2200);
+}
+
+function renderDetail(b) {
+  detail.innerHTML = `
+    <div class="detail-top">
+      <div>
+        <div class="detail-name">${b.name}</div>
+        <div class="detail-tagline">${b.tagline}</div>
+      </div>
+      <button class="use-btn" onclick="copyCommand('${b.id}')">复制指令</button>
+    </div>
+    <div class="swatches">
+      ${b.swatches.map(s => `
+        <div class="swatch">
+          <div class="swatch-dot" style="background:${s.color}"></div>
+          <span>${s.color}</span>
+          <span style="color:#444">·</span>
+          <span>${s.label}</span>
+        </div>
+      `).join('')}
+    </div>
+    <div class="tokens">
+      ${b.tokens.map(t => `
+        <div class="token">
+          <div class="token-label">${t.label}</div>
+          <div class="token-val">${t.val}</div>
+        </div>
+      `).join('')}
+    </div>
+    <div class="cmd"><span>// 告诉我：</span> 用 ${b.name} 风格帮我做一个作品集页面</div>
+  `;
+  detail.classList.add('visible');
+}
+
+function copyCommand(id) {
+  const b = brands.find(x => x.id === id);
+  const cmd = `用 ${b.name} 风格帮我做一个作品集页面`;
+  navigator.clipboard.writeText(cmd).then(() => showToast('已复制指令 → 粘贴给我即可'));
+}
+
+brands.forEach(b => {
+  const card = document.createElement('div');
+  card.className = `card ${b.theme}`;
+  card.dataset.id = b.id;
+
+  card.innerHTML = `
+    <div class="preview">
+      <div class="p-nav">
+        <div class="p-dot"></div>
+        <div class="p-dot"></div>
+        <div class="p-dot"></div>
+        <div class="p-logo">${b.name}</div>
+      </div>
+      <div>
+        <div class="p-headline">${b.headline}</div>
+        <div class="p-body" style="margin-top:6px">${b.body}</div>
+      </div>
+      <button class="p-btn">${b.btn}</button>
+    </div>
+    <div class="meta">
+      <div>
+        <div class="meta-name">${b.name}</div>
+        <div class="meta-desc">${b.tagline.split(' · ').slice(0,2).join(' · ')}</div>
+      </div>
+      <span class="meta-tag">${b.mood}</span>
+    </div>
+  `;
+
+  card.addEventListener('click', () => {
+    const isActive = activeId === b.id;
+
+    document.querySelectorAll('.card').forEach(c => c.classList.remove('active'));
+
+    if (isActive) {
+      activeId = null;
+      detail.classList.remove('visible');
+    } else {
+      activeId = b.id;
+      card.classList.add('active');
+      renderDetail(b);
+      setTimeout(() => detail.scrollIntoView({ behavior: 'smooth', block: 'nearest' }), 50);
+    }
+  });
+
+  grid.appendChild(card);
+});
+</script>
+</body>
+</html>

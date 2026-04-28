@@ -781,6 +781,33 @@
     .wp-bar2 { height: 2px; background: rgba(255,255,255,.06); border-radius: 2px; margin-top: .5rem; }
     .wp-fill { height: 100%; border-radius: 2px; background: linear-gradient(90deg, #3B82F6, #22D3EE); }
 
+    /* ── DESIGN EXPLORER frame ── */
+    .wp-explorer { background: #020b18; }
+    .wp-explorer .wp-ui { pointer-events: auto; }
+
+    .wp-brands {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: .45rem;
+      flex: 1;
+    }
+
+    .wpb {
+      border-radius: 8px;
+      padding: .65rem .75rem;
+      display: flex;
+      flex-direction: column;
+      gap: .3rem;
+      border: 1px solid rgba(255,255,255,.06);
+      transition: transform .18s ease, box-shadow .18s ease;
+      cursor: default;
+    }
+    .wpb:hover { transform: translateY(-2px); box-shadow: 0 6px 20px rgba(0,0,0,.4); }
+
+    .wpb-dot { width: 7px; height: 7px; border-radius: 50%; }
+    .wpb-name { font-size: 9.5px; font-weight: 600; letter-spacing: .06em; opacity: .55; }
+    .wpb-h { font-size: 12.5px; font-weight: 700; line-height: 1.2; margin-top: auto; }
+
     .wt { position: relative; z-index: 2; }
 
     .wt-num {
@@ -1190,32 +1217,57 @@
   <div class="glow-l"></div>
   <div class="sw-wrap">
     <div class="rv-s">
-      <div class="wp">
-        <canvas id="cvs1"></canvas>
+      <div class="wp wp-explorer">
         <div class="wp-ui">
           <div class="wp-bar">
-            <span class="wp-brand">✦ Design System</span>
+            <span class="wp-brand">✦ DESIGN.md Explorer</span>
             <div class="wp-dots"><span></span><span></span><span></span></div>
           </div>
-          <div class="wp-grid">
-            <div class="wp-card"><div class="wp-lbl">Components</div><div class="wp-val">128</div><div class="wp-bar2"><div class="wp-fill" style="width:82%"></div></div></div>
-            <div class="wp-card"><div class="wp-lbl">Brand Colors</div><div class="wp-val">24</div><div class="wp-bar2"><div class="wp-fill" style="width:60%"></div></div></div>
-            <div class="wp-card"><div class="wp-lbl">Typefaces</div><div class="wp-val">6</div><div class="wp-bar2"><div class="wp-fill" style="width:40%"></div></div></div>
-            <div class="wp-card"><div class="wp-lbl">Screens</div><div class="wp-val">48</div><div class="wp-bar2"><div class="wp-fill" style="width:75%"></div></div></div>
+          <div class="wp-brands">
+            <div class="wpb" style="background:#08090a">
+              <div class="wpb-dot" style="background:#7170ff"></div>
+              <div class="wpb-name" style="color:#8a8f98">Linear</div>
+              <div class="wpb-h" style="color:#f7f8f8">Build &amp;<br>Ship</div>
+            </div>
+            <div class="wpb" style="background:#000">
+              <div class="wpb-dot" style="background:#0099ff"></div>
+              <div class="wpb-name" style="color:#555">Framer</div>
+              <div class="wpb-h" style="color:#fff;letter-spacing:-.04em;font-weight:800">Design.<br>Publish.</div>
+            </div>
+            <div class="wpb" style="background:#fff">
+              <div class="wpb-dot" style="background:#533afd"></div>
+              <div class="wpb-name" style="color:#aaa">Stripe</div>
+              <div class="wpb-h" style="color:#061b31">Pay&shy;ments,<br>simplified.</div>
+            </div>
+            <div class="wpb" style="background:#fafafa">
+              <div class="wpb-dot" style="background:#000"></div>
+              <div class="wpb-name" style="color:#aaa">Vercel</div>
+              <div class="wpb-h" style="color:#171717;font-weight:800;letter-spacing:-.04em">Build.<br>Ship.</div>
+            </div>
+            <div class="wpb" style="background:#f6f5f4">
+              <div class="wpb-dot" style="background:#31302e"></div>
+              <div class="wpb-name" style="color:#a39e98;font-family:Georgia,serif">Notion</div>
+              <div class="wpb-h" style="color:#31302e;font-family:Georgia,serif;font-weight:700">Write.<br>Plan.</div>
+            </div>
+            <div class="wpb" style="background:#07080a">
+              <div class="wpb-dot" style="background:#FF6363"></div>
+              <div class="wpb-name" style="color:#444">Raycast</div>
+              <div class="wpb-h" style="color:#f5f5f5">Super&shy;charge<br>your Mac.</div>
+            </div>
           </div>
         </div>
       </div>
     </div>
     <div class="wt">
-      <div class="wt-num rv">01 — Selected Work</div>
-      <h2 class="wt-title rv d1">Project Name<br>(Placeholder)</h2>
-      <p class="wt-desc rv d2">Project description goes here. Brand identity, UI design, or whatever you want to showcase — drop the real content in when you're ready.</p>
+      <div class="wt-num rv">01 — Personal Project</div>
+      <h2 class="wt-title rv d1">Design System<br>Explorer</h2>
+      <p class="wt-desc rv d2">A visual reference tool comparing 7 top brand design systems — Linear, Framer, Stripe, Vercel, Notion, Raycast, Apple. Built with DESIGN.md to help designers find their UI direction fast, without opening a single Figma file.</p>
       <div class="wt-tags rv d3">
-        <span class="wtag">Branding</span>
-        <span class="wtag">UI Design</span>
-        <span class="wtag">2025</span>
+        <span class="wtag">Design Systems</span>
+        <span class="wtag">DESIGN.md</span>
+        <span class="wtag">2026</span>
       </div>
-      <a href="#" class="wt-link rv d4">View Project →</a>
+      <a href="/design-preview.html" class="wt-link rv d4">View Project →</a>
     </div>
   </div>
 </section>
@@ -1227,28 +1279,29 @@
   <div class="glow-r"></div>
   <div class="sw-wrap">
     <div class="wt">
-      <div class="wt-num rv">02 — Selected Work</div>
-      <h2 class="wt-title rv d1">Project Name<br>(Placeholder)</h2>
-      <p class="wt-desc rv d2">Second project description goes here. UI design, visual concepts, motion work — replace with your actual project when it's ready.</p>
+      <div class="wt-num rv">02 — Personal Project</div>
+      <h2 class="wt-title rv d1">This<br>Website</h2>
+      <p class="wt-desc rv d2">A portfolio built from scratch with zero coding experience — Next.js, Cloudflare Workers, WebGL shaders, and full AI collaboration. Every pixel iterated in conversation with Claude. The build process itself is the work.</p>
       <div class="wt-tags rv d3">
-        <span class="wtag">Visual Design</span>
-        <span class="wtag">AI-Assisted</span>
+        <span class="wtag">Next.js</span>
+        <span class="wtag">WebGL</span>
+        <span class="wtag">AI-Built</span>
         <span class="wtag">2026</span>
       </div>
-      <a href="#" class="wt-link rv d4">View Project →</a>
+      <a href="/blog-setup-day1.html" class="wt-link rv d4">Read the build log →</a>
     </div>
     <div class="rv-s d2">
       <div class="wp">
         <canvas id="cvs2"></canvas>
         <div class="wp-ui">
           <div class="wp-bar">
-            <span class="wp-brand">✦ AI Workflow</span>
+            <span class="wp-brand">✦ Build Stats</span>
             <div class="wp-dots"><span></span><span></span><span></span></div>
           </div>
           <div class="wp-grid">
-            <div class="wp-card"><div class="wp-lbl">Prompts</div><div class="wp-val">∞</div><div class="wp-bar2"><div class="wp-fill" style="width:100%"></div></div></div>
-            <div class="wp-card"><div class="wp-lbl">Iterations</div><div class="wp-val">37+</div><div class="wp-bar2"><div class="wp-fill" style="width:88%"></div></div></div>
+            <div class="wp-card"><div class="wp-lbl">Days to Launch</div><div class="wp-val">2</div><div class="wp-bar2"><div class="wp-fill" style="width:100%"></div></div></div>
             <div class="wp-card"><div class="wp-lbl">Code Written</div><div class="wp-val">0 lines</div><div class="wp-bar2"><div class="wp-fill" style="width:0%"></div></div></div>
+            <div class="wp-card"><div class="wp-lbl">AI Sessions</div><div class="wp-val">2+</div><div class="wp-bar2"><div class="wp-fill" style="width:55%"></div></div></div>
             <div class="wp-card"><div class="wp-lbl">Delivered</div><div class="wp-val">✓</div><div class="wp-bar2"><div class="wp-fill" style="width:100%"></div></div></div>
           </div>
         </div>
@@ -1640,7 +1693,6 @@ function makeAurora(id, hueShift) {
   requestAnimationFrame(draw);
 }
 
-makeAurora('cvs1', 0);
 makeAurora('cvs2', 22);
 
 /* ═══════════════════════════════════════════════════════
