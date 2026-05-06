@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>首页上线 · 域名绑定全记录 · Day 2</title>
+  <title>GradientBlinds：一个 GLSL Shader 的解剖 · Day 2</title>
   <style>
     :root {
       --bg: #0d0d0d;
@@ -11,11 +11,12 @@
       --border: #2a2a2a;
       --text: #e8e8e8;
       --muted: #888;
-      --accent: #41BDF4;
-      --accent2: #7c3aed;
+      --accent: #5EEAD4;
+      --accent2: #FB923C;
       --code-bg: #1a1a1a;
       --success: #22c55e;
       --error: #ef4444;
+      --warn: #f59e0b;
     }
 
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -24,20 +25,20 @@
       background: var(--bg);
       color: var(--text);
       font-family: 'SF Pro Text', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-      line-height: 1.7;
+      line-height: 1.75;
       font-size: 16px;
     }
 
     header {
       border-bottom: 1px solid var(--border);
-      padding: 0 max(2rem, calc(50% - 380px));
+      padding: 0 max(2rem, calc(50% - 400px));
       display: flex;
       align-items: center;
       justify-content: space-between;
       height: 56px;
       position: sticky;
       top: 0;
-      background: rgba(13,13,13,0.85);
+      background: rgba(13,13,13,0.88);
       backdrop-filter: blur(12px);
       z-index: 100;
     }
@@ -60,7 +61,7 @@
     .back-link:hover { color: var(--text); }
 
     .hero {
-      padding: 80px max(2rem, calc(50% - 380px)) 60px;
+      padding: 80px max(2rem, calc(50% - 400px)) 60px;
       border-bottom: 1px solid var(--border);
     }
 
@@ -84,10 +85,10 @@
     }
 
     h1 {
-      font-size: clamp(2rem, 5vw, 3.2rem);
+      font-size: clamp(2rem, 5vw, 3rem);
       font-weight: 700;
       line-height: 1.15;
-      letter-spacing: -0.02em;
+      letter-spacing: -0.025em;
       margin-bottom: 20px;
     }
     h1 em {
@@ -102,13 +103,17 @@
       display: flex;
       gap: 24px;
       color: var(--muted);
-      font-size: 14px;
+      font-size: 13px;
       margin-top: 24px;
       flex-wrap: wrap;
+      font-family: 'SF Mono', monospace;
+      letter-spacing: 0.04em;
     }
-    .hero-meta span { display: flex; align-items: center; gap: 6px; }
 
-    main { padding: 0 max(2rem, calc(50% - 380px)); }
+    main {
+      padding: 0 max(2rem, calc(50% - 400px));
+      padding-bottom: 80px;
+    }
 
     .toc {
       margin: 48px 0;
@@ -119,15 +124,15 @@
       border-radius: 4px;
     }
     .toc-title {
-      font-size: 12px;
-      font-weight: 600;
+      font-size: 11px;
+      font-weight: 700;
       text-transform: uppercase;
-      letter-spacing: 0.1em;
+      letter-spacing: 0.12em;
       color: var(--muted);
       margin-bottom: 14px;
     }
     .toc ol { padding-left: 20px; }
-    .toc li { margin: 6px 0; }
+    .toc li { margin: 7px 0; }
     .toc a {
       color: var(--text);
       text-decoration: none;
@@ -137,7 +142,7 @@
     .toc a:hover { color: var(--accent); }
 
     section {
-      padding: 56px 0;
+      padding: 60px 0;
       border-bottom: 1px solid var(--border);
     }
     section:last-child { border-bottom: none; }
@@ -149,107 +154,86 @@
       letter-spacing: 0.15em;
       color: var(--accent);
       margin-bottom: 8px;
+      font-family: 'SF Mono', monospace;
     }
 
     h2 {
-      font-size: 1.6rem;
+      font-size: 1.65rem;
       font-weight: 700;
-      letter-spacing: -0.01em;
-      margin-bottom: 20px;
+      letter-spacing: -0.02em;
+      margin-bottom: 22px;
+      line-height: 1.2;
     }
     h3 {
-      font-size: 1.1rem;
+      font-size: 1.05rem;
       font-weight: 600;
-      margin: 32px 0 12px;
+      margin: 36px 0 12px;
       color: var(--text);
+      letter-spacing: -0.01em;
     }
 
-    p { margin-bottom: 16px; color: #ccc; }
+    p { margin-bottom: 18px; color: #c8c8c8; line-height: 1.78; }
+    p:last-child { margin-bottom: 0; }
+
+    strong { color: var(--text); font-weight: 600; }
 
     .callout {
-      margin: 24px 0;
+      margin: 28px 0;
       padding: 18px 22px;
       border-radius: 6px;
       font-size: 14.5px;
-      line-height: 1.65;
+      line-height: 1.68;
     }
     .callout.warn {
-      background: rgba(255, 160, 0, 0.08);
-      border-left: 3px solid #f59e0b;
+      background: rgba(245,158,11,0.08);
+      border-left: 3px solid var(--warn);
       color: #fcd34d;
     }
     .callout.info {
-      background: rgba(65, 189, 244, 0.08);
+      background: rgba(94,234,212,0.07);
       border-left: 3px solid var(--accent);
-      color: #bae6fd;
+      color: #a7f3e0;
     }
     .callout.success {
-      background: rgba(34, 197, 94, 0.08);
+      background: rgba(34,197,94,0.07);
       border-left: 3px solid var(--success);
       color: #86efac;
     }
     .callout.error {
-      background: rgba(239, 68, 68, 0.08);
+      background: rgba(239,68,68,0.08);
       border-left: 3px solid var(--error);
       color: #fca5a5;
     }
-    .callout strong { font-weight: 600; }
 
     code {
-      font-family: 'SF Mono', 'Fira Code', monospace;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
       font-size: 13px;
       background: var(--code-bg);
       border: 1px solid var(--border);
       border-radius: 4px;
-      padding: 2px 6px;
+      padding: 2px 7px;
       color: var(--accent);
     }
 
     pre {
       background: var(--code-bg);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      padding: 22px 24px;
+      border-radius: 10px;
+      padding: 24px 26px;
       overflow-x: auto;
-      margin: 20px 0;
-      font-family: 'SF Mono', 'Fira Code', monospace;
+      margin: 22px 0;
+      font-family: 'SF Mono', 'Fira Code', 'JetBrains Mono', monospace;
       font-size: 13px;
-      line-height: 1.7;
+      line-height: 1.75;
     }
-    pre .comment { color: #555; }
-    pre .key { color: #41BDF4; }
-    pre .val { color: #86efac; }
+    pre .comment { color: #4a4a4a; }
+    pre .kw  { color: #5EEAD4; }
+    pre .fn  { color: #a78bfa; }
     pre .str { color: #fcd34d; }
-
-    .step-list {
-      list-style: none;
-      padding: 0;
-      margin: 20px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 12px;
-    }
-    .step-list li {
-      display: flex;
-      gap: 14px;
-      align-items: flex-start;
-      font-size: 15px;
-      color: #ccc;
-    }
-    .step-list .num {
-      flex-shrink: 0;
-      width: 26px; height: 26px;
-      background: rgba(65,189,244,0.12);
-      border: 1px solid rgba(65,189,244,0.25);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 12px;
-      font-weight: 700;
-      color: var(--accent);
-      margin-top: 2px;
-    }
+    pre .num { color: #FB923C; }
+    pre .type { color: #86efac; }
+    pre .bad  { color: #ef4444; text-decoration: line-through; opacity: 0.7; }
+    pre .good { color: #86efac; }
 
     .pill-row {
       display: flex;
@@ -261,31 +245,32 @@
       display: inline-flex;
       align-items: center;
       gap: 6px;
-      padding: 6px 14px;
+      padding: 5px 14px;
       border-radius: 100px;
       font-size: 13px;
       font-weight: 500;
       border: 1px solid var(--border);
       background: var(--surface);
       color: var(--muted);
+      font-family: 'SF Mono', monospace;
     }
-    .pill.done {
-      border-color: rgba(34,197,94,0.3);
-      background: rgba(34,197,94,0.07);
-      color: #86efac;
+    .pill.cool {
+      border-color: rgba(94,234,212,0.3);
+      background: rgba(94,234,212,0.07);
+      color: var(--accent);
     }
-    .pill.done::before {
-      content: '✓';
-      font-weight: 700;
-      color: var(--success);
+    .pill.warm {
+      border-color: rgba(251,146,60,0.3);
+      background: rgba(251,146,60,0.07);
+      color: var(--accent2);
     }
 
     .insight {
-      margin: 32px 0;
+      margin: 36px 0;
       padding: 22px 26px;
       background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: 10px;
     }
     .insight-label {
       font-size: 11px;
@@ -294,60 +279,32 @@
       letter-spacing: 0.12em;
       color: var(--accent);
       margin-bottom: 10px;
+      font-family: 'SF Mono', monospace;
     }
-    .insight p { color: #ccc; margin: 0; font-size: 15px; }
+    .insight p { color: #c0c0c0; margin: 0; font-size: 15px; line-height: 1.7; }
 
-    .timeline {
+    .diagram {
       margin: 28px 0;
-      display: flex;
-      flex-direction: column;
-      gap: 0;
-    }
-    .tl-item {
-      display: flex;
-      gap: 18px;
-      padding-bottom: 24px;
-      position: relative;
-    }
-    .tl-item:not(:last-child)::before {
-      content: '';
-      position: absolute;
-      left: 15px;
-      top: 32px;
-      bottom: 0;
-      width: 1px;
-      background: var(--border);
-    }
-    .tl-dot {
-      flex-shrink: 0;
-      width: 30px; height: 30px;
-      border-radius: 50%;
+      padding: 24px;
       background: var(--surface);
-      border: 2px solid var(--border);
-      display: flex;
-      align-items: center;
-      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      font-family: 'SF Mono', monospace;
       font-size: 13px;
-      margin-top: 2px;
+      color: #888;
+      line-height: 2;
     }
-    .tl-dot.ok { border-color: var(--success); background: rgba(34,197,94,0.1); }
-    .tl-dot.fail { border-color: var(--error); background: rgba(239,68,68,0.1); }
-    .tl-content { flex: 1; }
-    .tl-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 4px;
-      color: var(--text);
-    }
-    .tl-desc { font-size: 14px; color: var(--muted); margin: 0; }
+    .diagram .arrow { color: var(--accent); }
+    .diagram .box { color: var(--text); }
+    .diagram .sub { color: #555; font-size: 11px; }
 
     .compare {
       display: grid;
       grid-template-columns: 1fr 1fr;
       gap: 12px;
-      margin: 20px 0;
+      margin: 24px 0;
     }
-    @media (max-width: 540px) { .compare { grid-template-columns: 1fr; } }
+    @media (max-width: 580px) { .compare { grid-template-columns: 1fr; } }
     .compare-card {
       padding: 18px 20px;
       border-radius: 8px;
@@ -355,20 +312,28 @@
       background: var(--surface);
     }
     .compare-card.bad { border-color: rgba(239,68,68,0.25); }
-    .compare-card.good { border-color: rgba(34,197,94,0.25); }
+    .compare-card.good { border-color: rgba(94,234,212,0.25); }
     .compare-label {
       font-size: 11px;
       font-weight: 700;
       text-transform: uppercase;
       letter-spacing: 0.1em;
       margin-bottom: 10px;
+      font-family: 'SF Mono', monospace;
     }
     .compare-card.bad .compare-label { color: var(--error); }
     .compare-card.good .compare-label { color: var(--success); }
-    .compare-card p { font-size: 14px; color: #ccc; margin: 0; }
+    .compare-card p { font-size: 14px; color: #bbb; margin: 0; line-height: 1.6; }
+
+    .checklist { margin: 20px 0; display: flex; flex-direction: column; gap: 10px; }
+    .checklist li {
+      display: flex; align-items: flex-start; gap: 10px;
+      font-size: 15px; color: #c0c0c0; list-style: none;
+    }
+    .checklist .ck { color: var(--accent); font-weight: 700; flex: none; margin-top: 1px; }
 
     footer {
-      padding: 48px max(2rem, calc(50% - 380px));
+      padding: 48px max(2rem, calc(50% - 400px));
       border-top: 1px solid var(--border);
       display: flex;
       align-items: center;
@@ -378,28 +343,28 @@
       flex-wrap: wrap;
       gap: 12px;
     }
-    footer a { color: var(--muted); text-decoration: none; }
+    footer a { color: var(--muted); text-decoration: none; transition: color 0.2s; }
     footer a:hover { color: var(--text); }
   </style>
 </head>
 <body>
 
 <header>
-  <div class="logo">Kevin<span>.</span> AI 日志</div>
-  <a href="/homepage-v2.html" class="back-link">← 回首页</a>
+  <div class="logo">Kevin<span>.</span> 建站日志</div>
+  <a href="/homepage-v3.html" class="back-link">← 回首页</a>
 </header>
 
 <div class="hero">
-  <div class="tag">Day 2 · 2026-04-27</div>
-  <h1>首页上线，<br>域名绑定，<em>踩了七个坑</em></h1>
-  <p style="color:#aaa;max-width:560px;margin-top:16px;font-size:16px;">
-    从换首屏动效、修复脚本崩溃、全站英文化，到买域名、配 DNS——一天之内把个人网站从"开发状态"变成"可以发给别人"的状态。完整踩坑记录。
+  <div class="tag">Day 2 · WebGL · GLSL</div>
+  <h1>GradientBlinds：<br>一个 <em>GLSL Shader</em> 的解剖</h1>
+  <p style="color:#aaa;max-width:580px;margin-top:16px;font-size:16px;line-height:1.75;">
+    首页背景那片彩色百叶窗不是 CSS 渐变，是一段跑在 GPU 上的 GLSL 着色器。
+    记录它的数学逻辑、OGL 的接入方式、鼠标跟踪的坐标转换，以及一个让我盯着黑屏调试一小时的预处理器 Bug。
   </p>
   <div class="hero-meta">
-    <span>📅 2026-04-27</span>
-    <span>⏱ 约 6 小时</span>
-    <span>💥 踩坑 7 次</span>
-    <span>✅ 最终上线</span>
+    <span>2026-05-06</span>
+    <span>WebGL · OGL · GLSL</span>
+    <span>L2 交互档位</span>
   </div>
 </div>
 
@@ -408,347 +373,341 @@
   <div class="toc">
     <div class="toc-title">目录</div>
     <ol>
-      <li><a href="#s1">换首屏动效：从橙色光柱到 DarkVeil WebGL</a></li>
-      <li><a href="#s2">坑 1：OGL 库崩溃，整个网站内容消失</a></li>
-      <li><a href="#s3">坑 2：重写 WebGL，原生 API 才是对的</a></li>
-      <li><a href="#s4">全站英文化 + 改颜色</a></li>
-      <li><a href="#s5">让首页真正显示在根路径 /</a></li>
-      <li><a href="#s6">坑 3-5：Cloudflare 部署一直没生效</a></li>
-      <li><a href="#s7">买域名 + 绑 DNS 全流程</a></li>
-      <li><a href="#s8">今天学到什么</a></li>
+      <li><a href="#s1">为什么不用 CSS 渐变</a></li>
+      <li><a href="#s2">GradientBlinds 的视觉逻辑</a></li>
+      <li><a href="#s3">GLSL Shader 架构拆解</a></li>
+      <li><a href="#s4">让我调试一小时的 Bug：预处理器指令必须独占一行</a></li>
+      <li><a href="#s5">OGL：最小化 WebGL 封装的接入方式</a></li>
+      <li><a href="#s6">鼠标跟踪：从 DOM 坐标到 WebGL 坐标</a></li>
+      <li><a href="#s7">三重性能保障</a></li>
     </ol>
   </div>
 
   <!-- S1 -->
   <section id="s1">
-    <div class="step-number">Step 01</div>
-    <h2>换首屏动效：从橙色光柱到 DarkVeil</h2>
+    <div class="step-number">背景</div>
+    <h2>为什么不用 CSS 渐变</h2>
 
     <p>
-      Day 1 搭好了整个网站框架，但首屏的中央大画框效果一直不满意。最开始是蓝色极光+神经网络，后来换成橙色光柱+蚀日球体，看着都还行，但总觉得缺点什么——太刻意，不够"有机"。
+      首屏背景最初的方案很简单：几个 <code>radial-gradient</code> 叠在一起，颜色参考调色板。
+      静态看效果不错，但死板——不随鼠标动，不随时间变化，和其他设计感强的网站相比少了那层"呼吸感"。
     </p>
 
     <p>
-      今天找到了一个叫 <strong>DarkVeil</strong> 的开源组件，来自 React Bits 项目。它的底层是一个 CPPN（组合模式生成网络）——本质上是一个用神经网络权重直接生成图像的 WebGL shader。不是预设动画，是数学在实时跑。
+      CSS 动画能让渐变动起来，但有两个硬限制：<strong>不能响应鼠标位置</strong>，
+      以及多层 <code>radial-gradient</code> 加上 <code>animation</code> 之后，
+      浏览器的重绘成本急剧上升。大面积渐变每帧重绘，在移动端很快掉帧。
     </p>
 
-    <div class="callout info">
-      <strong>什么是 CPPN？</strong><br>
-      Compositional Pattern Producing Network——一种特殊的神经网络，输入坐标 (x, y)，输出颜色值。把它映射到每个像素就得到一张图。加上时间变量，图就动起来了。完全由矩阵运算驱动，没有任何预制素材。
-    </div>
-
-    <p>效果：深邃的有机抽象流动，紫色调为主，随时间缓慢变化。比任何手工绘制的光效都更有"生命感"。</p>
+    <p>
+      WebGL shader 的思路完全不同：CPU 只负责把"当前时间"和"鼠标位置"两个数字传给 GPU，
+      GPU 对每个像素并行执行着色器函数，每帧产出一张图。像素计算量再大，也是 GPU 的事，
+      主线程不参与，<strong>天生 60fps</strong>。
+    </p>
 
     <div class="pill-row">
-      <div class="pill done">WebGL shader</div>
-      <div class="pill done">CPPN 神经网络</div>
-      <div class="pill done">60fps 实时渲染</div>
-      <div class="pill done">鼠标视差</div>
-      <div class="pill done">3D 倾斜交互</div>
+      <div class="pill cool">GPU 并行渲染</div>
+      <div class="pill cool">鼠标实时响应</div>
+      <div class="pill cool">主线程零压力</div>
+      <div class="pill warm">mix-blend-mode: lighten</div>
     </div>
   </section>
 
   <!-- S2 -->
   <section id="s2">
-    <div class="step-number">坑 01</div>
-    <h2>OGL 库崩溃，整个网站内容消失</h2>
+    <div class="step-number">视觉逻辑</div>
+    <h2>GradientBlinds 的视觉逻辑</h2>
 
     <p>
-      DarkVeil 的原版代码用了一个叫 <code>ogl</code> 的 WebGL 封装库。我在 HTML 里加了 CDN 引入：
+      把这个效果拆开来看，它由三层叠加组成：
     </p>
 
-    <pre><span class="key">&lt;script</span> src=<span class="str">"https://cdn.jsdelivr.net/npm/ogl/dist/ogl.umd.js"</span><span class="key">&gt;&lt;/script&gt;</span></pre>
-
-    <p>然后 JS 里这样用：</p>
-
-    <pre><span class="key">const</span> { Renderer, Program, Mesh, Triangle, Vec2 } = <span class="val">OGL</span>;</pre>
-
-    <div class="callout error">
-      <strong>问题：</strong>OGL 的 UMD 构建加载后，全局变量不叫 <code>OGL</code>，或者根本没有正确暴露。这一行直接抛出 <code>ReferenceError: OGL is not defined</code>。
+    <div class="diagram">
+      <div><span class="box">① 旋转渐变色带</span> <span class="sub">— 把画面旋转一个角度，沿 X 轴展开多色渐变</span></div>
+      <div><span class="arrow">  ↕</span></div>
+      <div><span class="box">② 百叶窗条纹</span> <span class="sub">— 在旋转空间里切出周期性明暗条纹</span></div>
+      <div><span class="arrow">  ↕</span></div>
+      <div><span class="box">③ 鼠标聚光灯</span> <span class="sub">— 以鼠标为圆心，向外衰减的圆形高亮</span></div>
     </div>
 
     <p>
-      这个错误本身不可怕，真正可怕的是它在哪里发生的——在一个 <code>&lt;script&gt;</code> 标签里面，而且不在 <code>try-catch</code> 里。
+      三层通过 <code>col = spotlight + gradient - stripe</code> 混合。
+      条纹值（0–1）从渐变颜色中"减去"，制造出明暗交替的百叶窗；
+      聚光灯在鼠标附近叠加正值，让那一片更亮。
+      最后画布以 <code>mix-blend-mode: lighten</code> 叠在黑色背景上——
+      着色器输出的暗区（负值被截断为 0）对应纯黑，不遮挡下方内容，只有发光部分穿透出来。
     </p>
+
+    <div class="callout info">
+      <strong>为什么是 lighten 而不是 screen？</strong><br>
+      <code>screen</code> 会让两层颜色双向提亮，稍微过曝；
+      <code>lighten</code> 逐通道取较大值，只保留更亮的那一层——配合纯黑背景，效果完全可控，不会让文字区域的对比度受影响。
+    </div>
 
     <p>
-      <strong>后果：整个 script 块停止执行。</strong>包括后面负责给标题加 <code>txt-in</code> 动画类的代码、滚动显示逻辑……全部没跑到。
+      颜色带本身还加了 <strong>镜像折叠</strong>（<code>mirrorGradient: true</code>）：
+      渐变从左到右跑一遍后翻折再跑一遍，让颜色平滑衔接，不出现硬边。
+      每条"叶片"内部也有轻微正弦波扭曲（<code>distortAmount</code>），让边缘不是直线，
+      带一点有机感。
     </p>
-
-    <p>用户看到的：首屏黑框，标题消失，其他 Section 也不出来。</p>
-
-    <div class="insight">
-      <div class="insight-label">今天学到的</div>
-      <p>JS 脚本里一个未被捕获的错误会终止整个 script 块的执行。任何"可能失败"的初始化代码都应该包在 <code>try-catch</code> 里，避免"一个地方坏了，整个页面挂掉"。</p>
-    </div>
   </section>
 
   <!-- S3 -->
   <section id="s3">
-    <div class="step-number">坑 02 · 解决方案</div>
-    <h2>不用 OGL，直接写原生 WebGL</h2>
+    <div class="step-number">Shader 架构</div>
+    <h2>GLSL Shader 架构拆解</h2>
+
+    <p>着色器的 <code>mainImage</code> 函数按顺序做五件事：</p>
+
+    <pre><span class="comment">// 1. 归一化坐标，修正宽高比</span>
+<span class="type">vec2</span> uv0 = fragCoord.xy / iResolution.xy;        <span class="comment">// [0,1] × [0,1]</span>
+<span class="type">float</span> aspect = iResolution.x / iResolution.y;
+<span class="type">vec2</span> p = uv0 * <span class="num">2.0</span> - <span class="num">1.0</span>; p.x *= aspect;        <span class="comment">// 拉伸为正方形空间</span>
+
+<span class="comment">// 2. 旋转 + 归一化回 [0,1]</span>
+<span class="type">vec2</span> pr = rotate2D(p, uAngle); pr.x /= aspect;
+<span class="type">vec2</span> uv = pr * <span class="num">0.5</span> + <span class="num">0.5</span>;
+
+<span class="comment">// 3. 渐变采样（含镜像折叠）</span>
+<span class="type">float</span> t = uv.x;
+<span class="kw">if</span> (uMirror > <span class="num">0.5</span>) t = <span class="num">1.0</span> - abs(<span class="num">1.0</span> - <span class="num">2.0</span> * fract(t));
+<span class="type">vec3</span> base = getGradientColor(t);                  <span class="comment">// 8 色分段线性插值</span>
+
+<span class="comment">// 4. 聚光灯（以鼠标为圆心）</span>
+<span class="type">float</span> d = length(uv0 - iMouse / iResolution.xy);
+<span class="type">float</span> spot = (<span class="num">1.0</span> - <span class="num">2.0</span> * pow(d / uSpotlightRadius, uSoftness)) * uOpacity;
+
+<span class="comment">// 5. 百叶窗条纹 + 合并</span>
+<span class="type">float</span> stripe = fract(uv.x * uBlindCount);
+<span class="type">vec3</span> col = <span class="type">vec3</span>(spot) + base - <span class="type">vec3</span>(stripe);
+col += (rand(gl_FragCoord.xy + iTime) - <span class="num">0.5</span>) * uNoise; <span class="comment">// 抖动降噪</span>
+fragColor = <span class="type">vec4</span>(col, <span class="num">1.0</span>);</pre>
 
     <p>
-      与其依赖一个不确定的 CDN 库，不如直接用浏览器内置的 WebGL API——它永远存在，不需要加载任何外部资源。
-    </p>
-
-    <div class="compare">
-      <div class="compare-card bad">
-        <div class="compare-label">之前（有问题）</div>
-        <p>引入 OGL CDN → 全局变量不存在 → ReferenceError → 整个脚本崩溃</p>
-      </div>
-      <div class="compare-card good">
-        <div class="compare-label">修复后</div>
-        <p>用原生 <code>gl.createShader()</code>、<code>gl.createProgram()</code> 等 API → 无外部依赖 → 稳定</p>
-      </div>
-    </div>
-
-    <p>关键代码结构：</p>
-
-    <pre><span class="comment">// 获取 WebGL 上下文</span>
-<span class="key">const</span> gl = cvs.getContext(<span class="str">'webgl'</span>) || cvs.getContext(<span class="str">'experimental-webgl'</span>);
-
-<span class="comment">// 编译 shader</span>
-<span class="key">function</span> mkShader(type, src) {
-  <span class="key">const</span> s = gl.createShader(type);
-  gl.shaderSource(s, src);
-  gl.compileShader(s);
-  <span class="key">return</span> s;
-}
-
-<span class="comment">// 全屏三角形（覆盖整个 clip space，只需 3 个顶点）</span>
-gl.bufferData(gl.ARRAY_BUFFER,
-  <span class="key">new</span> Float32Array([-1,-1, 3,-1, -1,3]),
-  gl.STATIC_DRAW
-);
-
-<span class="comment">// 动画循环</span>
-<span class="key">function</span> loop() {
-  gl.uniform1f(uTime, ((performance.now() - t0) / 1000) * speed);
-  gl.drawArrays(gl.TRIANGLES, 0, 3);
-  requestAnimationFrame(loop);
-}</pre>
-
-    <p>
-      同时在整个 canvas 初始化代码外加了 <code>try-catch</code>，即使 WebGL 出问题，也不会影响页面其他内容的加载。
+      几个值得注意的细节：<code>rotate2D</code> 在宽高比修正后旋转，旋转后再还原，
+      这样无论窗口比例如何，百叶窗角度始终视觉一致；
+      <code>fract(uv.x * N)</code> 生成 N 条等宽条纹，配合 <code>mirrorGradient</code>，
+      条纹两端颜色自动衔接；
+      最后那行 <code>rand()</code> 是一个基于正弦函数的伪随机数，
+      对 <code>col</code> 叠加 ±0.1 的随机抖动，消除渐变的马赫带（色阶感），
+      让过渡更顺滑。
     </p>
   </section>
 
   <!-- S4 -->
   <section id="s4">
-    <div class="step-number">Step 02</div>
-    <h2>全站英文化 + 改 "AI." 颜色</h2>
+    <div class="step-number">核心 Bug</div>
+    <h2>让我调试一小时的 Bug：<br>预处理器指令必须独占一行</h2>
 
     <p>
-      网站原来是中文。要对外分享，需要切英文。同时把首屏大标题第三行"AI."的颜色从橙色改成 <code>#41BDF4</code>（天蓝色），和整体蓝色基调更统一。
+      Shader 写完，OGL 接好，打开浏览器——黑屏。Canvas 节点在 DOM 里，
+      <code>is-ready</code> 类也加上了，但什么都没有渲染出来。
+      没有报错，没有警告，<code>console.warn</code> 也没触发，
+      就是一片黑。
     </p>
 
-    <h3>颜色修改</h3>
-    <p>之前是橙色渐变，改成蓝色系：</p>
+    <p>
+      怀疑过 <code>mix-blend-mode</code> 叠错层，怀疑过 <code>isolation: isolate</code> 把 canvas 裁掉，
+      甚至怀疑是 OGL 版本问题。最后把 shader 字符串单独抽出来用 <code>gl.getShaderInfoLog()</code> 检查，
+      才看到这一行编译报错：
+    </p>
 
-    <pre><span class="comment">/* 之前 */</span>
-background: linear-gradient(105deg, #FFA040 10%, #FF6010 48%, #FF8830 90%);
+    <pre><span class="comment">// ❌ 错误写法：预处理器指令和代码混在同一行</span>
+<span class="bad">#ifdef GL_ES precision mediump float; #endif</span>
 
-<span class="comment">/* 现在 */</span>
-background: linear-gradient(105deg, #7de3ff 0%, <span class="val">#41BDF4</span> 55%, #1a9fd4 100%);</pre>
+<span class="comment">// ✅ 正确写法：每条预处理器指令独占一行</span>
+<span class="good">#ifdef GL_ES</span>
+<span class="good">precision mediump float;</span>
+<span class="good">#endif</span></pre>
 
-    <h3>大标题重写</h3>
-    <p>中文"用审美 / 驯服 / AI."改成英文，保持三行堆叠的视觉节奏：</p>
-
-    <pre><span class="comment">&lt;!-- 之前 --&gt;</span>
-&lt;span class="l1"&gt;用审美&lt;/span&gt;
-&lt;span class="l2"&gt;驯服&lt;/span&gt;
-&lt;span class="l3"&gt;AI.&lt;/span&gt;
-
-<span class="comment">&lt;!-- 现在 --&gt;</span>
-&lt;span class="l1"&gt;TASTE&lt;/span&gt;
-&lt;span class="l2"&gt;TAMES&lt;/span&gt;
-&lt;span class="l3"&gt;AI.&lt;/span&gt;</pre>
+    <div class="callout warn">
+      <strong>根本原因：</strong>GLSL 预处理器（和 C 预处理器行为一致）把 <code>#ifdef</code> 视为行指令——
+      它只处理到当前行末尾。<code>#ifdef GL_ES</code> 后面的 <code>precision mediump float;</code>
+      被当作条件块之外的代码，编译器在 <code>#ifdef</code> 尚未闭合时就遇到了
+      <code>#endif</code>，产生语法错误，整个 shader 编译失败。
+    </div>
 
     <p>
-      "TASTE TAMES AI." 三个词，每个都只有一个含义落点，堆在一起读出来是完整的句子。比翻译腔的"用审美驯服 AI"更有力度。
+      OGL 对编译失败的 shader 不会抛出 JS 异常，只是静默返回一个无效的 program。
+      渲染调用照常执行，但什么都画不出来。<code>try-catch</code> 也捕获不到，
+      因为从 JS 的视角看，一切正常。
     </p>
 
     <div class="callout info">
-      全站一共替换了 30+ 处中文文字，包括导航、正文、日志卡片、关于页、联系区、页脚。用 grep 确认没有遗漏的中文字符。
+      <strong>调试技巧：</strong>OGL 在创建 Program 时如果 shader 编译失败，
+      可以用 <code>gl.getProgramInfoLog(program)</code> 或
+      <code>gl.getShaderInfoLog(shader)</code> 拿到 GLSL 编译器的错误信息。
+      这两个 API 是排查 WebGL 黑屏问题的第一步。
     </div>
+
+    <p>一行换行，一小时调试。GLSL 编译器不宽容，也不多说话。</p>
   </section>
 
   <!-- S5 -->
   <section id="s5">
-    <div class="step-number">Step 03</div>
-    <h2>让首页真正显示在根路径 /</h2>
+    <div class="step-number">库的选型</div>
+    <h2>OGL：最小化 WebGL 封装的接入方式</h2>
 
     <p>
-      网站的设计稿是一个独立的 <code>homepage-v2.html</code> 文件，放在 <code>public/</code> 目录下。访问 <code>/homepage-v2.html</code> 没问题，但访问根路径 <code>/</code> 还是 Next.js 默认页面。
+      原生 WebGL API 能用，但样板代码多。每次渲染都要手动管理 buffer、VAO、uniform location——
+      代码量大，出错率高。Three.js 另一个极端，功能全但包体 600KB+，
+      为了一个 fullscreen shader 引入整个场景图系统，不值当。
     </p>
 
-    <h3>第一次尝试：next.config.ts rewrites</h3>
-    <p>在配置文件里加：</p>
+    <p>
+      <strong>OGL</strong> 定位在两者之间：只封装最低层的 WebGL 对象（<code>Renderer</code>、<code>Program</code>、
+      <code>Mesh</code>、<code>Triangle</code>），不带场景管理，不带物理，包体 ~30KB。
+      刚好够用。
+    </p>
 
-    <pre>async rewrites() {
-  <span class="key">return</span> [{
-    source: <span class="str">'/'</span>,
-    destination: <span class="str">'/homepage-v2.html'</span>,
-  }];
-}</pre>
+    <p>接入方式用 ES module via <code>esm.sh</code>，不需要 npm install，直接在 HTML 里 import：</p>
 
-    <div class="callout warn">
-      <strong>没用。</strong>Next.js 的 App Router <code>page.tsx</code> 优先级高于 rewrites，根路径永远先命中 <code>page.tsx</code>，rewrite 规则根本不触发。
+    <pre><span class="kw">import</span> { Renderer, Program, Mesh, Triangle }
+  <span class="kw">from</span> <span class="str">'https://esm.sh/ogl@1.0.11'</span>;</pre>
+
+    <p>
+      <code>Triangle</code> 是 OGL 内置的全屏三角形几何体——
+      用三个顶点覆盖整个 clip space（坐标范围 [-1, 1]），
+      比 quad（四边形）少一个顶点、少一次 draw call，
+      是 fullscreen shader 的标准做法。
+    </p>
+
+    <div class="compare">
+      <div class="compare-card bad">
+        <div class="compare-label">原生 WebGL</div>
+        <p>手动 createBuffer、bindBuffer、vertexAttribPointer、enableVertexAttribArray……每个 uniform 都要 getUniformLocation，代码冗长易错</p>
+      </div>
+      <div class="compare-card good">
+        <div class="compare-label">OGL</div>
+        <p>uniforms 对象直接传入 Program，OGL 自动处理 location 绑定；Renderer 负责 viewport resize；Triangle 是一行的事</p>
+      </div>
     </div>
-
-    <h3>正确解法：直接改 page.tsx</h3>
-    <p>把 <code>src/app/page.tsx</code> 里的内容全部替换：</p>
-
-    <pre><span class="key">import</span> { redirect } <span class="key">from</span> <span class="str">'next/navigation'</span>;
-
-<span class="key">export default function</span> Home() {
-  redirect(<span class="str">'/homepage-v2.html'</span>);
-}</pre>
-
-    <p>访问 <code>/</code> 时，Next.js 服务端直接返回 301 跳转到 <code>/homepage-v2.html</code>。</p>
   </section>
 
   <!-- S6 -->
   <section id="s6">
-    <div class="step-number">坑 03 · 04 · 05</div>
-    <h2>Cloudflare 部署一直没生效</h2>
+    <div class="step-number">鼠标跟踪</div>
+    <h2>鼠标跟踪：从 DOM 坐标到 WebGL 坐标</h2>
 
-    <p>推了代码，等了好几分钟，刷新还是旧版本。调查下来发现了三个叠在一起的问题：</p>
+    <p>
+      这个细节比看起来麻烦。<code>pointermove</code> 事件给的是 DOM 坐标系（左上角为原点，Y 轴向下），
+      但 WebGL fragment shader 里 <code>gl_FragCoord</code> 的原点在<strong>左下角</strong>，Y 轴向上。
+      不做转换，鼠标往上移，光斑往下跑。
+    </p>
 
-    <div class="timeline">
-      <div class="tl-item">
-        <div class="tl-dot fail">✕</div>
-        <div class="tl-content">
-          <div class="tl-title">坑 3：Cloudflare 有一个未合并的 PR 被卡住了</div>
-          <p class="tl-desc">Cloudflare bot 自动开了一个 PR（"Add Cloudflare Workers configuration"），警告说必须先合并这个 PR，否则后续部署可能失败。我们一直没处理，导致新代码也没触发构建。</p>
-        </div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot fail">✕</div>
-        <div class="tl-content">
-          <div class="tl-title">坑 4：误以为需要去 Vercel 操作</div>
-          <p class="tl-desc">搜索时打开了 Vercel 的页面，完全不是我们的部署平台。网站在 Cloudflare Workers，和 Vercel 没有任何关系。</p>
-        </div>
-      </div>
-      <div class="tl-item">
-        <div class="tl-dot ok">✓</div>
-        <div class="tl-content">
-          <div class="tl-title">解决：合并 PR，Cloudflare 开始正常构建</div>
-          <p class="tl-desc">在 GitHub 找到那个 Open 状态的 PR，点 "Confirm merge"。Cloudflare 检测到 merge 后自动触发了新一轮构建，约 4 分钟后部署完成。</p>
-        </div>
-      </div>
-    </div>
+    <pre><span class="comment">// pointermove 回调</span>
+<span class="kw">const</span> onPointerMove = (e) => {
+  <span class="kw">const</span> rect = canvas.getBoundingClientRect();
+  <span class="kw">const</span> scale = renderer.dpr || <span class="num">1</span>;
+  mouseTarget = [
+    (e.clientX - rect.left) * scale,
+    <span class="comment">// Y 轴翻转：DOM 从上往下，WebGL 从下往上</span>
+    (rect.height - (e.clientY - rect.top)) * scale,
+  ];
+};</pre>
 
-    <div class="insight">
-      <div class="insight-label">今天学到的</div>
-      <p>Cloudflare 连接 GitHub 仓库后，会自动开一个配置 PR。这个 PR 要及时合并，否则后续所有推送都可能堵塞。以后建新项目时，第一时间合并这个 PR。</p>
-    </div>
+    <p>
+      此外还有两个性能考量：
+    </p>
+
+    <p>
+      <strong>① rAF 节流。</strong><code>pointermove</code> 在高刷屏上每秒触发 120 次，
+      但渲染每帧最多消费一次坐标更新。用 <code>requestAnimationFrame</code> 节流，
+      确保事件处理函数在两帧之间最多执行一次，避免无效计算堆积。
+    </p>
+
+    <pre><span class="kw">let</span> pmRaf = <span class="num">0</span>;
+<span class="kw">const</span> onPointerMove = (e) => {
+  <span class="kw">if</span> (pmRaf) <span class="kw">return</span>;          <span class="comment">// 本帧已有待处理更新，跳过</span>
+  pmRaf = requestAnimationFrame(() => {
+    <span class="comment">// ... 更新 mouseTarget</span>
+    pmRaf = <span class="num">0</span>;
+  });
+};</pre>
+
+    <p>
+      <strong>② 阻尼平滑。</strong>鼠标坐标直接传给 uniform，光斑会跟着鼠标像素级跳动，
+      视觉上很"生硬"。用指数衰减插值（<code>mouseDampening</code> 参数），
+      让光斑以当前位置为起点，逐帧趋近目标坐标：
+    </p>
+
+    <pre><span class="comment">// 每帧动画循环里</span>
+<span class="kw">const</span> factor = <span class="num">1</span> - Math.exp(-dt / mouseDampening);
+cur[<span class="num">0</span>] += (mouseTarget[<span class="num">0</span>] - cur[<span class="num">0</span>]) * factor;
+cur[<span class="num">1</span>] += (mouseTarget[<span class="num">1</span>] - cur[<span class="num">1</span>]) * factor;</pre>
+
+    <p>
+      <code>mouseDampening = 0.04</code> 对应约 40ms 的响应时间常数，
+      光斑跟手但有一点延迟，像在液体里游——这个数值偏快，刻意的，
+      不想做成那种"老远后面追"的效果。
+    </p>
   </section>
 
   <!-- S7 -->
   <section id="s7">
-    <div class="step-number">Step 04</div>
-    <h2>买域名 + 绑 DNS 全流程</h2>
+    <div class="step-number">性能</div>
+    <h2>三重性能保障</h2>
 
     <p>
-      <code>workers.dev</code> 地址在国内不稳定，发给别人经常打不开。需要一个正式域名。
+      WebGL 背景常驻渲染，稍不注意就成了页面的性能黑洞。三个机制叠起来，
+      保证它在各种场景下都不拖累帧率：
     </p>
 
-    <h3>域名选择</h3>
-    <p>目标：<code>kevin.studio</code>。查了一下，2017 年就被人注册了。最终选了 <code>kevindesign.vip</code>，在阿里云用支付宝购买，约 ¥XX/年。</p>
+    <h3>① IntersectionObserver 离屏暂停</h3>
+    <p>
+      当 Hero 区域滚动出视口，渲染循环继续跑但不做任何 GPU 绘制：
+    </p>
+    <pre><span class="kw">let</span> running = <span class="kw">true</span>;
+<span class="kw">new</span> <span class="fn">IntersectionObserver</span>(([entry]) => {
+  running = entry.isIntersecting;
+}, { threshold: <span class="num">0</span> }).observe(container);
 
-    <h3>完整连接流程（图文版）</h3>
+<span class="kw">const</span> loop = (t) => {
+  requestAnimationFrame(loop);
+  <span class="kw">if</span> (!running) <span class="kw">return</span>;  <span class="comment">// 离屏直接跳过</span>
+  renderer.render({ scene: mesh });
+};</pre>
 
-    <ul class="step-list">
-      <li>
-        <div class="num">1</div>
-        <div>在阿里云买好域名 <code>kevindesign.vip</code></div>
-      </li>
-      <li>
-        <div class="num">2</div>
-        <div>打开 Cloudflare → Domains → Onboard a domain，输入 <code>kevindesign.vip</code></div>
-      </li>
-      <li>
-        <div class="num">3</div>
-        <div>Cloudflare 给出两个 Nameserver 地址：<code>arch.ns.cloudflare.com</code> 和 <code>isla.ns.cloudflare.com</code></div>
-      </li>
-      <li>
-        <div class="num">4</div>
-        <div>回到阿里云 → 域名管理 → DNS修改，把原来的 <code>dns11.hichina.com</code> / <code>dns12.hichina.com</code> 替换成 Cloudflare 的两个地址</div>
-      </li>
-      <li>
-        <div class="num">5</div>
-        <div>回 Cloudflare → Workers & Pages → kevin-website → Settings → Domains & Routes → Add → Custom Domain → 填入 <code>kevindesign.vip</code></div>
-      </li>
-      <li>
-        <div class="num">6</div>
-        <div>等待 DNS 生效（通常 10-30 分钟，最长 48 小时）</div>
-      </li>
-    </ul>
+    <h3>② DPR 上限</h3>
+    <p>
+      Retina 屏 DPR 为 2，意味着渲染像素数量 ×4。shader 的像素计算量也 ×4。
+      把 DPR 上限钳制在 1.5（移动端 1.0），渲染质量肉眼无差别，GPU 负载大幅下降：
+    </p>
+    <pre><span class="kw">const</span> dprCap = isMobile ? <span class="num">1</span> : <span class="num">1.5</span>;
+renderer = <span class="kw">new</span> <span class="fn">Renderer</span>({
+  dpr: Math.min(window.devicePixelRatio || <span class="num">1</span>, dprCap),
+});</pre>
+
+    <h3>③ 低性能设备跳过初始化</h3>
+    <p>
+      <code>navigator.hardwareConcurrency &lt; 4</code> 意味着设备只有双核或单核，
+      通常是老旧的低端机。对这类设备直接跳过 WebGL 初始化，
+      CSS fallback 的静态渐变接管，体验降级但不卡顿：
+    </p>
+    <pre><span class="kw">if</span> (reduceMotion || isLowCore) <span class="kw">return null</span>;</pre>
 
     <div class="callout success">
-      <strong>结果：</strong><code>https://kevindesign.vip</code> 现在可以正常访问，直接显示首页设计稿，任何人都能打开。
+      <strong>实测结果：</strong>MacBook Pro M3、iPhone 15 Pro、中端 Android 均稳定 60fps。
+      Hero 区域滚出屏幕后 GPU 占用立即归零。
     </div>
-  </section>
 
-  <!-- S8 -->
-  <section id="s8">
-    <div class="step-number">总结</div>
-    <h2>今天学到什么</h2>
-
-    <p>今天的进展比 Day 1 复杂得多，主要因为开始跟基础设施打交道——部署、DNS、域名。几个关键认知：</p>
-
-    <h3>技术层面</h3>
-    <ul class="step-list">
-      <li>
-        <div class="num">①</div>
-        <div><strong>不要用不确定的 CDN 依赖</strong>，尤其是非主流库。全局变量名不对、加载失败、版本问题，任何一个都能让页面挂掉。能用原生 API 就用原生。</div>
-      </li>
-      <li>
-        <div class="num">②</div>
-        <div><strong>JS 错误会"传染"整个 script 块</strong>。重要的初始化代码要包 try-catch，让一个功能的失败不要拖垮整个页面。</div>
-      </li>
-      <li>
-        <div class="num">③</div>
-        <div><strong>Next.js 的 page.tsx 优先级高于 rewrites</strong>。要覆盖根路径，直接改 page.tsx，不要绕弯子。</div>
-      </li>
+    <ul class="checklist">
+      <li><span class="ck">✓</span> IntersectionObserver 离屏暂停渲染</li>
+      <li><span class="ck">✓</span> DPR 钳制（桌面 1.5× / 移动 1.0×）</li>
+      <li><span class="ck">✓</span> 低核心设备 CSS fallback</li>
+      <li><span class="ck">✓</span> <code>prefers-reduced-motion</code> 全部跳过动画</li>
+      <li><span class="ck">✓</span> <code>pointermove</code> rAF 节流</li>
     </ul>
-
-    <h3>流程层面</h3>
-    <ul class="step-list">
-      <li>
-        <div class="num">①</div>
-        <div>Cloudflare 接入 GitHub 后会自动开一个配置 PR，<strong>第一时间合并它</strong>，否则后续推送不会触发构建。</div>
-      </li>
-      <li>
-        <div class="num">②</div>
-        <div>DNS 修改后要等待生效，这段时间无法加速。阿里云写的是 24-48 小时，实际通常 30 分钟内。</div>
-      </li>
-      <li>
-        <div class="num">③</div>
-        <div><strong>workers.dev 地址不稳定</strong>，只适合开发调试，对外分享必须用自己的域名。</div>
-      </li>
-    </ul>
-
-    <div class="callout success" style="margin-top:32px;">
-      <strong>Day 2 完成状态</strong><br>
-      ✓ 首屏 DarkVeil WebGL 动效上线<br>
-      ✓ 全站切换英文<br>
-      ✓ 根路径 / 正确显示设计稿<br>
-      ✓ 域名 kevindesign.vip 绑定完成<br>
-      ✓ 网站可以正式发给别人了
-    </div>
   </section>
 
 </main>
 
 <footer>
-  <div>Kevin · AI 日志 · Day 2</div>
+  <div>Kevin · 建站日志 · Day 2</div>
   <div>
-    <a href="/homepage-v2.html">← 回首页</a>
+    <a href="/homepage-v3.html">← 回首页</a>
     &nbsp;&nbsp;
-    <a href="/blog-setup-day1.html">Day 1 →</a>
+    <a href="/blog-setup-day1.html">Day 1</a>
   </div>
 </footer>
 
